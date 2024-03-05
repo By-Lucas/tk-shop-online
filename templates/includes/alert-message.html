@@ -1,7 +1,7 @@
-{% if messages %}
+<!-- {% if messages %}
     {% for message in messages %}
         <div id="mensagem_alert" aria-live="polite" aria-atomic="true" class="position-relative">
-            <div class="toast-container position-absolute top-0 end-0 p-3">
+            <div class="toast-container position-fixed top-1 end-0 p-3"  tyle="z-index: 1050;">
                 <div class="toast col-md-12 alert alert-{{ message.tags }} text-white bg-{{ message.tags }} alert-dismissible fade show"
                      role="alert">
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
@@ -24,5 +24,17 @@
         </script>
     {% endfor %}
 {% endif %}
+ -->
 
 
+ {% if messages %}
+    {% for message in messages %}
+        <div class="toast-container position-fixed top-1 end-0 p-3" style="z-index: 1050;">
+            <div class="toast col-md-12 alert alert-{{ message.tags }} text-white bg-{{ message.tags }} alert-dismissible fade show"
+                 role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                <strong>{{ message|safe }}</strong>
+            </div>
+        </div>
+    {% endfor %}
+{% endif %}
