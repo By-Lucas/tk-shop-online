@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body %}
+
+<div class="container py-5">
+
+<div class="row">
+    <div class="col-lg-9">
+        <div class="row">
+
+            <!-- Card 1 -->
+            <div class="col-lg-3 col-md-12">
+                <div class="card">
+                    <div class="card-header bg-transparent border-bottom-0">
+                        <!-- Share Icon -->
+                        <div class="dropdown">
+                            <a class="dropdown-toggle share-btn" type="button" id="shareDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false" style="text-decoration: none;">
+                                <i class="fa-solid fa-share-nodes"></i>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item text-success" href="#"><i class="fab fa-whatsapp"></i>
+                                    Whatsapp</a>
+                                <a class="dropdown-item text-primary" href="#"><i class="fa-brands fa-telegram"></i>
+                                    Telegram</a>
+                            </div>
+                        </div>
+                        <!-- Favorite Icon -->
+                        <a href="#" class="favorite-btn"><i class="favorite-icon far fa-heart"></i></a>
+                    </div>
+                    <div class="thumb">
+                        <a href="">
+                            <img src="https://promoburn.com.br/uploads/17a1198c7f8112263b8e70032e636bc5ebadef00.jpg" class="card-img-top product-img" alt="...">
+                        </a>
+                    </div>
+
+                    <div class="card-body text-center">
+                        <div class="card-content">
+                            <a href="https://promoburn.com.br/oferta/105891" class="text-secondary text-hover">
+                                <strong class="title">Lâmpada Inteligente Smart Color 10W Elgin RGB10W Elgin RGB10W Elgin RGB lgin RGB10W Elgin RGB ...
+                                </strong>
+                            </a>
+                            <div class="row d-block">
+                                <div class="col-md-12 col-lg-12">
+                                <p class="preco">
+                                    <span class="preco-novo"><strong class="text-pink">R$ 134,99</strong></span>
+                                </p>
+                                <p class="loja">
+                                    <img src="https://promoburn.com.br/uploads/L8mSoNpcC8Cm8QH6LGqrO1s1ioXOQqDNANq6npZe.png" style="max-width: 100px">
+                                </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                      
+                    <a href="#" class="btn btn-pink"><i class="fas fa-shopping-cart"></i> Pegar oferta</a>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+<script>
+    window.addEventListener('load', function () {
+        // Seleciona todos os elementos com a classe "title"
+        var titles = document.querySelectorAll('.title');
+
+        // Para cada elemento .title
+        titles.forEach(function (title) {
+            // Calcula a altura do título
+            var height = title.scrollHeight;
+
+            // Calcula a altura equivalente a três linhas
+            var threeLinesHeight = parseFloat(window.getComputedStyle(title).lineHeight) * 3;
+
+            // Se a altura atual do título for menor que a altura equivalente a três linhas
+            if (height < threeLinesHeight) {
+                // Calcula o número de quebras de linha adicionais necessárias para completar o espaço para três linhas
+                var additionalLines = Math.ceil((threeLinesHeight - height) / parseFloat(window.getComputedStyle(title).fontSize));
+
+                // Adiciona quebras de linha adicionais conforme necessário
+                for (var i = 0; i < additionalLines; i++) {
+                    title.innerHTML += '<br>';
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock body %}

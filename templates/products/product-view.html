@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block body %}
+
+{% block head %}
+    <meta property="og:image" content="{% if product.image %}{{ product.image.url }}{% endif %}">
+    <meta property="og:image:width" content="600">
+    <meta property="og:image:height" content="400">
+    <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{% url 'product:product' slug=product.slug_product %}">
+{% endblock head %}
+
+
+<!-- Single Product Start -->
+<div class="container-fluid hero-header"  style="background-color: #f9f9f9;">
+    <div class="container py-5">
+        <div class="row g-4 mb-5">
+            <div class="col-lg-12 col-xl-12">
+                <div class="row g-4">
+                    <div class="container bg-white borde border-primary rounded my-1">
+                        <div class="row ">
+                            <div class="col-lg-6 my-4 d-flex justify-content-center align-items-center">
+                                <div class="border rounded">
+                                    <a href="{{ product.affiliate_link }}" target="_blank">
+                                        <img src="{% if product.image %}{{ product.image.url }}{% endif %}" class="img-fluid rounded" alt="Image">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 my-4">
+                                <h4 class="fw-bold">{{product.name}}</h4>
+                                <p class="mb-3">Categoria: {{product.category.name}}</p>
+                                <h5 class="fw-bold mb-3">R${{product.price}}</h5>
+                                <div class="d-flex mb-4">
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star text-secondary"></i>
+                                    <i class="fa fa-star text-secondary"></i>
+                                </div>
+                                <div class="input-group quantity mb-5" style="width: 100px;">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-sm btn-minus rounded-circle bg-light border" >
+                                            <i class="fa fa-minus"></i>
+                                        </button>
+                                    </div>
+                                    <input type="text" class="form-control form-control-sm text-center border-0" value="1">
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-sm btn-plus rounded-circle bg-light border">
+                                            <i class="fa fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <a href="{{product.affiliate_link}}" class="btn btn-success border border-success rounded-pill px-4 py-2 mb-4  col-md-6" target="_blank">
+                                    <i class="fa fa-shopping-bag me-2 text-white"></i> 
+                                    Pegar oferta
+                                </a>
+
+                                <div class="col-md-12 float-right">
+                                    <button class="btn btn-success border-0 float-right mb-2" id="btnVisualizacoesOferta">
+                                        <i class="fa fa-eye"></i> 427
+                                    </button>
+                                    <button class="btn btn-success border-0 float-right mb-2" id="btnLikeOferta" data-oferta-id="100016">
+                                        <i class="fa fa-thumbs-up"></i><span> 0</span>
+                                    </button>
+                                    <input type="hidden" id="btnLikeOfertaLink" value="https://promoburn.com.br/ofertas/curtir">
+                                    <button class="btn btn-warning border-0 float-right mb-2" id="btnAddReportar" data-toggle="modal" data-target="#modalReportTip100016">
+                                        <i class="fa fa-exclamation-circle"></i> Reportar
+                                    </button>
+                                    <button class="btn btn-primary border-0 float-right mb-2" id="btnAddProdutoListaDesejos">
+                                        <i class="fa fa-bell"></i> Ativar Alerta
+                                    </button>
+                                    <a href="#comentarios" class="btn btn-secondary border-0 float-right mb-2" id="btnScrollToComments"><i class="fa fa-comments"></i> 0</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="container bg-white borde border-primary rounded my-1">
+                        <div class="row ">
+                            <div class="card-title justify-content-center">
+                                <div class=" text-center">
+                                    <h2 class="text-secondary mt-3">INFORMAÇÕES ADICIONAIS</h2>
+                                    <hr class="p-1" style="color: rgb(143, 0, 156); ">
+                                </div>
+                                <h4>Informacoes 1</h4>
+                                <h4>Informacoes 2</h4>
+                                <h4>Informacoes 3</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12">
+                        <nav>
+                            <div class="nav nav-tabs mb-3">
+                                <button class="nav-link active border-white border-bottom-0" type="button" role="tab"
+                                    id="nav-mission-tab" data-bs-toggle="tab" data-bs-target="#nav-mission"
+                                    aria-controls="nav-mission" aria-selected="false">Avaliações</button>
+                            </div>
+                        </nav>
+                        
+                        <div class="tab-content mb-5">
+                            <div class="tab-pane active" id="nav-mission" role="tabpanel" aria-labelledby="nav-mission-tab">
+                                <div class="d-flex">
+                                    <img src="{% if config_site.image %}{{config_site.image.url}}{% endif %}" class="img-fluid rounded-circle p-3" style="width: 100px; height: 100px;" alt="">
+                                    <div class="">
+                                        <p class="mb-2" style="font-size: 14px;">April 12, 2024</p>
+                                        <div class="d-flex justify-content-between">
+                                            <h5>Jason Smith</h5>
+                                            <div class="d-flex mb-3">
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star"></i>
+                                            </div>
+                                        </div>
+                                        <p>The generated Lorem Ipsum is therefore always free from repetition injected humour, or non-characteristic 
+                                            words etc. Susp endisse ultricies nisi vel quam suscipit </p>
+                                    </div>
+                                </div>
+                                <div class="d-flex">
+                                    <img src="{% if config_site.image %}{{config_site.image.url}}{% endif %}" class="img-fluid rounded-circle p-3" style="width: 100px; height: 100px;" alt="">
+                                    <div class="">
+                                        <p class="mb-2" style="font-size: 14px;">April 12, 2024</p>
+                                        <div class="d-flex justify-content-between">
+                                            <h5>Sam Peters</h5>
+                                            <div class="d-flex mb-3">
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star text-secondary"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                            </div>
+                                        </div>
+                                        <p class="text-dark">The generated Lorem Ipsum is therefore always free from repetition injected humour, or non-characteristic 
+                                            words etc. Susp endisse ultricies nisi vel quam suscipit </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="nav-vision" role="tabpanel">
+                                <p class="text-dark">Tempor erat elitr rebum at clita. Diam dolor diam ipsum et tempor sit. Aliqu diam
+                                    amet diam et eos labore. 3</p>
+                                <p class="mb-0">Diam dolor diam ipsum et tempor sit. Aliqu diam amet diam et eos labore.
+                                    Clita erat ipsum et lorem et sit</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form action="#" method="post">
+                        <h4 class="mb-5 fw-bold">Deixe um comentário</h4>
+                        <div class="row g-4">
+                            <div class="col-lg-6">
+                                <div class="border-bottom rounded">
+                                    <input name="name_comment" id="name_comment" type="text" class="form-control border-1 me-4" placeholder="Seu nome *" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="border-bottom rounded">
+                                    <input name="email_comment" id="" type="email" class="form-control border-1" placeholder="Seu E-mail *" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="border-bottom rounded my-4">
+                                    <textarea name="comment" id="comment" class="form-control border-1" cols="30" rows="8" placeholder="Comentário *" spellcheck="false" required></textarea>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <div class="d-flex justify-content-between mb-0">
+                                    <button href="#" type="submit" class="btn border border-secondary text-primary rounded-pill px-4 py-3"> Postar comentário</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="vesitable container">
+        <h1 class="fw-bold mb-2">Produtos relacionados</h1>
+
+            <div class="owl-carousel vegetable-carousel justify-content-center">
+                {% for featured_product in product_chunks %}
+                    <div class="col-lg-12 col-md-12 col-sm-6 mb-4">
+                        <div class="border border-primary rounded position-relative vesitable-item">
+                            <div class="vesitable-img">
+                                <a href="{% url 'product:product' slug=featured_product.slug_product %}" class="mb-3">
+                                    <img src="{% if featured_product.image %}{{featured_product.image.url}}{% endif %}" class="img-fluid rounded-top" alt="">
+                                </a>
+                            </div>
+                            <div class="text-white bg-primary px-3 py-1 rounded position-absolute" style="top: 10px; right: 10px;">{{featured_product.category.name}}</div>
+                            <div class="p-4 pb-0 rounded-bottom">
+                                <a href="{% url 'product:product' slug=featured_product.slug_product %}" class="mb-3"><h4>{{featured_product.name|slice:15}}...</h4></a>
+                                <div class="d-flex justify-content-between flex-lg-wrap">
+                                    <p class="text-danger fs-5 fw-bold">R${{featured_product.price}}</p>
+                                    <a href="{{featured_product.affiliate_link}}" class="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary" target="_blank">
+                                        <i class="fa fa-shopping-bag me-2 text-primary"></i> Obter oferta
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Single Product End -->
+
+{% endblock body %}

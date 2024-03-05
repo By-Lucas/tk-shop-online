@@ -1,0 +1,116 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px; /* Defina o tamanho máximo do card */
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border-radius: .25rem;
+    padding: .7em;
+    box-shadow: 0px 0px 10px 0.4px rgba(0, 0, 0, 0.1);
+    transition: all 0.5s;
+    margin: auto; /* Centralize o card na página */
+}
+
+.card img.product-img {
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    width: 100%;
+    /* Ajusta a largura para 80% do espaço */
+    display: block;
+    /* Centraliza a imagem */
+    margin: auto;
+    margin-top: 8px;
+    margin-bottom: 5px;
+    transition: transform 0.3s; /* Adiciona transição apenas para a imagem do produto */
+    max-height: 100%;
+}
+
+.card:hover img.product-img {
+    transform: scale(1.15);
+    /* Efeito de zoom ao passar o mouse sobre a imagem do produto */
+}
+
+.card-header {
+    position: relative;
+    /* Adiciona posição relativa para que os ícones permaneçam dentro do card */
+}
+
+/* Positioning for icons */
+.card-header .share-icon {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    color: rgb(22, 80, 238);
+}
+
+.card-header .favorite-icon {
+    position: absolute;
+    top: 10px;
+    right: 5px;
+    color: rgb(248, 53, 167);
+
+}
+
+.card-header .favorite-icon:hover {
+    color: rgb(190, 10, 115);
+    /* Efeito de zoom ao passar o mouse sobre o card */
+}
+
+.text-pink {
+    color: #b8365d;
+}
+
+.text-hover {
+    text-decoration: none;
+}
+
+.text-hover:hover {
+    text-decoration: underline;
+}
+
+.btn-pink {
+    background-color: #e83e8c; /* Cor de fundo rosa */
+    color: #fff; /* Cor do texto branco */
+    border-radius: 30px; /* Raio de borda maior para tornar o botão mais redondo */
+    padding: 5px 0; /* Espaçamento interno vertical (10px) e removido o espaçamento horizontal */
+    width: 100%; /* Largura do botão */
+    font-weight: bold; /* Texto em negrito */
+    text-decoration: none; /* Remove sublinhado */
+    transition: background-color 0.3s; /* Transição suave da cor de fundo */
+    border: none; /* Remove a borda */
+    display: block; /* Permite a definição de uma largura no botão */
+    margin: 0 auto; /* Centraliza horizontalmente */
+    text-align: center; /* Centraliza o texto */
+}
+
+.btn-pink:hover {
+    background-color: #a12a4e; /* Cor de fundo rosa mais escura ao passar o mouse */
+    color: #fff; /* Cor do texto branco */
+}
+
+.card-body .title {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Limita a três linhas */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 10px; /* Adiciona um espaço abaixo do título */
+  
+}
+
+.loja {
+    margin-bottom: -5px;
+}
+
+.thumb {
+    max-width: calc(90% - 5px); /* 50% do espaço do card menos 20px de margem */
+    margin: auto; /* Centralize a imagem */
+    
+}
+
+
+.card-content {
+        /* Adicione margem ou preenchimento na parte inferior */
+        margin-bottom: 20px; /* Exemplo de margem na parte inferior */
+        padding-bottom: 20px; /* Exemplo de preenchimento na parte inferior */
+    }
