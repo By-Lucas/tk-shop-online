@@ -28,8 +28,13 @@
                                 </div>
                             </div>
                             <div class="col-lg-6 my-4">
-                                <h4 class="fw-bold">{{product.name}}</h4>
-                                <p class="mb-3">Categoria: {{product.category.name}}</p>
+                                <h4 class="fw-bold">{{product.name}} 
+                                    {% if request.user.is_authenticated %} 
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#editProductModal" title="Editar produto"><i class="fas fa-edit" style="color: rgb(8, 71, 245);"></i></a>
+                                    {% endif %}
+                                </h4>
+                                <p class="fw-bold mb-3 text-dark"><strong>Categoria: {{product.category.name}}</strong></p>
+                                <p class="fw-bold mb-3 text-dark"><strong>Cupom de desconto: {{product.coupon}}</strong></p>
                                 <h5 class="fw-bold mb-3">R${{product.price}}</h5>
                                 <div class="d-flex mb-4">
                                     <i class="fa fa-star text-secondary"></i>
@@ -184,19 +189,36 @@
             <div class="owl-carousel vegetable-carousel justify-content-center">
                 {% for featured_product in product_chunks %}
                     <div class="col-lg-12 col-md-12 col-sm-6 mb-4">
-                        <div class="border border-primary rounded position-relative vesitable-item">
+                        <div class="card border border-primary rounded position-relative vesitable-item">
                             <div class="vesitable-img">
-                                <a href="{% url 'product:product' slug=featured_product.slug_product %}" class="mb-3">
-                                    <img src="{% if featured_product.image %}{{featured_product.image.url}}{% endif %}" class="img-fluid rounded-top" alt="">
-                                </a>
+                                <div class="fruite-img p-3">
+                                    <a href="{% url 'product:product' slug=featured_product.slug_product %}"
+                                        style="height: 230px; position: relative; display: flex; justify-content: center; align-items: center;">
+                                        <img src="{% if featured_product.image %}{{ featured_product.image.url }}{% endif %}" class="img-fluid"
+                                            alt="{{ featured_product.name }}">
+                                    </a>
+                                </div>
                             </div>
                             <div class="text-white bg-primary px-3 py-1 rounded position-absolute" style="top: 10px; right: 10px;">{{featured_product.category.name}}</div>
-                            <div class="p-4 pb-0 rounded-bottom">
-                                <a href="{% url 'product:product' slug=featured_product.slug_product %}" class="mb-3"><h4>{{featured_product.name|slice:15}}...</h4></a>
-                                <div class="d-flex justify-content-between flex-lg-wrap">
-                                    <p class="text-danger fs-5 fw-bold">R${{featured_product.price}}</p>
-                                    <a href="{{featured_product.affiliate_link}}" class="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary" target="_blank">
-                                        <i class="fa fa-shopping-bag me-2 text-primary"></i> Obter oferta
+                            <div class="p-2 rounded-bottom text-center ">
+                                <a href="{% url 'product:product' slug=featured_product.slug_product %}">
+                                    <samp class="mb-2">
+                                        <h4 class="text-muted fs-6 product-name">{{ featured_product.name|slice:15 }}...</h4>
+                                    </samp>
+                                </a>
+                                <p class="text-danger fs-6 fw-bold ">R${{ featured_product.price }}</p>
+                                {% if featured_product.company_product.image %}
+                                    <div class="col-md-12 text-center d-flex justify-content-center">
+                                        <img class="text-center img-fluid pb-1" src="{{ featured_product.company_product.image.url }}" style=" width: 100px; height: 35px;" alt="">
+                                    </div>
+                                {% else %}
+                                    <div style="width: 100px; height: 35px;">
+                                    </div>
+                                {% endif %}
+                                <div class="dflex-lg-wrap" alt="max-width 100%">
+                                    <a href="{{featured_product.affiliate_link}}" class="btn border border-secondary rounded-pill px-3 text-primary" target="_blank">
+                                        <i class="fa fa-shopping-bag me-2 text-primary"></i>
+                                        Pegar oferta
                                     </a>
                                 </div>
                             </div>
@@ -208,5 +230,13 @@
     </div>
 </div>
 <!-- Single Product End -->
+
+{% include "products/includes/modal-edit-product.html" %}
+
+<!-- product_list.html -->
+<script>
+    var myModal = new bootstrap.Modal(document.getElementById('editProductModal'));
+</script>
+
 
 {% endblock body %}

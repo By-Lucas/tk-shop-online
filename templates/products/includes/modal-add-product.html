@@ -1,0 +1,20 @@
+<!-- Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Adicionar Produto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulário de cadastro de produto -->
+                <form method="post" action="{% url 'home:home' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ forms.as_p }}
+                    <button type="submit" class="btn btn-success"><i class="fas fa-plus"></i> Cadastrar produto</button>
+                    <button type="button" class="btn btn-secondary float-end" data-bs-dismiss="modal" aria-label="Close">Fechar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

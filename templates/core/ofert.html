@@ -7,7 +7,7 @@
 
 <!-- Fruits Shop Start-->
 <div class="container-fluid fruite py-0" style="background-color: #f9f9f9;">
-    <div class="">
+    <div class="container">
         <!-- <h1 class="mb-4">Produtos</h1> -->
         <div class="row g-4">
             
@@ -21,11 +21,10 @@
                             <div class="input-group w-100 mx-auto d-flex">
                                 <input type="search" name="name" class="form-control p-3" value="{{request.GET.name}}"
                                     placeholder="Nome do produto..." aria-describedby="search-icon-1">
-                               
                             </div>
                         </div>
-                        <div class="col-6"></div>
-                        <div class="col-xl-3">
+                        <div class="col-4"></div>
+                        <div class="col-xl-4">
                             <div class="bg-light ps-3 py-3 rounded d-flex justify-content-between mb-4">
                                 <label for="fruits">Classificação:</label>
                                 <select id="fruits" name="fruitlist" class="border-0 form-select-sm bg-light me-3"
@@ -35,8 +34,13 @@
                                     <option value="opel">Orgânico</option>
                                     <option value="audi">Fantástico</option>
                                 </select>
+                                {% if request.user.is_authenticated %}
+                                    <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addProductModal"><i class="fas fa-plus"></i> Produto</a>
+                                {% endif %}
                             </div>
+
                         </div>
+
                     </div>
 
                     <div class="row g-4">
@@ -64,8 +68,6 @@
                                             </li>
                                             {% endfor %}
                                         </ul>
-                                        
-                                        
                                     </div>
                                 </div>
                                 <div class="col-lg-12">

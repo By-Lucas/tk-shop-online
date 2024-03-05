@@ -1,11 +1,12 @@
 from django.db.models import Q
 from django.db.models import Count
-from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.generic import View
+from django.shortcuts import redirect, render
 from django.core.paginator import Paginator, EmptyPage
 
 from category.models import Category
+from apps.products.forms import ProductForm
 from products.models.models_product import Product
 
 
@@ -21,6 +22,8 @@ class ProductListView(View):
         min_price = request.GET.get('min_price')
         max_price = request.GET.get('max_price')
         selected_categories = request.GET.getlist('category')
+        
+        forms = ProductForm()
         
         products = Product.objects.all()
         products_featured = products.filter(favorite=True)[:4]
@@ -52,56 +55,36 @@ class ProductListView(View):
             products = paginator.page(1)
         
         context = {
+            'forms': forms,
             'products': products, 
             'products_featured': products_featured, 
             'selected_categories': selected_categories,
             'categories_with_products':categories_with_products
+        }
+        
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home:home')  # Redirecionar para a página de lista de produtos após a criação bem-sucedida
+        else:
+            # Se o formulário não for válido, renderize novamente a página com os erros do formulário
+            forms = ProductForm()  # Instância de um novo formulário vazio para renderizar na página
+            products = Product.objects.all()
+            products_featured = products.filter(favorite=True)[:4]
+            categories_with_counts = Category.objects.annotate(product_count=Count('product'))
+            categories_with_products = categories_with_counts.filter(product_count__gt=0)
+            context = {
+                'forms': forms,
+                'products': products, 
+                'products_featured': products_featured, 
+                'categories_with_products':categories_with_products
             }
-        
-        return render(request, self.template_name, context)
-
-    def post(self, request):
-        context = {}
-        return render(request, self.template_name, context)
+            return render(request, self.template_name, context)
 
 
-class FilteredProductListView(View):
-    def post(self, request):
-        products = Product.objects.all()
-
-        # Obter parâmetros de filtro da solicitação POST
-        min_price = request.POST.get('min_price')
-        max_price = request.POST.get('max_price')
-        category = request.POST.get('category')
-        name = request.POST.get('name')
-        favorite = request.POST.get('favorite')
-        company = request.POST.get('company')
-
-        # Aplicar filtros aos produtos
-        if min_price:
-            products = products.filter(price__gte=min_price)
-        if max_price:
-            products = products.filter(price__lte=max_price)
-        if category:
-            products = products.filter(category__name=category)
-        if name:
-            products = products.filter(name__icontains=name)
-        if favorite:
-            products = products.filter(favorite=True)
-        if company:
-            products = products.filter(company_name__icontains=company)
-        
-        
-
-        # Serializar os produtos para JSON
-        data = [{'name': product.name, 'price': product.price} for product in products]
-        
-        print(data)
-        
-        # Retornar os produtos filtrados em JSON
-        return JsonResponse(data, safe=False)
-    
-    
 def product_ofert(request):
     template_name = "products/product.html"
 

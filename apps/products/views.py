@@ -1,11 +1,12 @@
 from typing import Any
 
+from django.urls import reverse
 from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import ListView, View, TemplateView, UpdateView, DeleteView, DetailView
 
 from category.models import Category
+from products.forms import ProductForm
 from products.models.models_product import Product
 from config.models.models_config import ConfigModel
 from config.models.models_telegram import TelegramGroups
@@ -24,13 +25,15 @@ class ProductView(View):
         user = self.request.user
 
         product = get_object_or_404(Product, slug_product=slug)
+        form = ProductForm(instance=product)
+        
         #featured_products = Product.objects.all()
         
         featured_products = Product.objects.all().exclude(id=product.id)[:10]  # Obtém até 20 produtos
         #product_chunks = list(chunk_it(featured_products, 4)) # Aqui mostra de 4 em 4 produtos
-        print(featured_products)
 
         context = {
+            'form': form,
             'product': product,
             'oferts_page':oferts_page,
             'category': Category.objects.all(),
@@ -41,9 +44,21 @@ class ProductView(View):
     def get_object(self, queryset=None):
         return Product.objects.filter(pk=self.kwargs.get("pk"))
 
+    def post(self, request, slug, *args: Any, **kwargs: Any):
+        x_frame_options = request.META.get("X-Frame-Options")
+        if x_frame_options is not None:
+            print("X-Frame-Options:", x_frame_options)
+        
+        product = get_object_or_404(Product, slug_product=slug)
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            return redirect('product:product', slug=product.slug_product)  # Corrigido aqui
+        
+        return redirect('product:product', slug=product.slug_product)  # Corrigido aqui
 
+            
 class SendProduct(View):
-    
     def post(self, request,  *args: Any, **kwargs: Any):
         if request.method == "POST":
             send_telegram = None
