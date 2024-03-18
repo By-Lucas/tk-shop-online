@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body %}
+
+
+<div class="mb-5 hero-header">
+    <div class="mt-5 mb-4">
+        <div class="container-fluid fruite py-0" style="background-color: #f9f9f9;">
+            <div class="container" style="min-height: 70vh;">
+                <h1 class="mt-3">Grupos do WhatsApp</h1>
+                <div class="row g-4">
+                    <div class="col-sm-12">
+                        <div class="col-sm-12">
+                            <button type="button" id="listarGruposBtn" class="btn btn-success me-3 mt-4">Listar todos os grupos</button>
+                            <button type="button" class="btn text-white mt-4" data-bs-toggle="modal" data-bs-target="#my-groups" style="background-color: rgb(92, 38, 117);">Meus grupos</button>
+                        </div>
+
+                        <div id="groupListDiv" style="display: none;">
+                            <form action="" method="post">
+                                {% csrf_token %}
+                                <div class="col-sm-3  my-3">
+                                    <!-- Barra lateral -->
+                                    <div class="sidebar">
+                                        <input type="text" id="searchInput" class="form-control" placeholder="Pesquisar...">
+                                        <!-- Adicione outros elementos da barra lateral, se necessário -->
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <button type="button" class="btn btn-primary me-3 text-white" onclick="selectAll()">Selecionar Todos</button>
+                                    <button type="button" class="btn btn-danger me-3" onclick="deselectAll()">Desmarcar Todos</button>
+                                    <button type="button" class="btn btn-secondary me-3  text-white" onclick="orderSelected()">Ordenar Selecionados</button>
+                                    <button type="button" class="btn btn-success me-3" data-url="{% url 'config:save_selected_groups' %}" id="saveSelectedGroupsBtn">Salvar Selecionados</button>
+                                
+                                </div>
+                                <div class="col-sm-12 mt-3">
+                                    <ul id="groupList" class="list-group border border-1 rounded" style="overflow-y: scroll; height: 600px;">
+                                    
+                                        <li class="list-group-item">
+                                            <div class="d-flex bd-highlight form-check form-switch text-success">
+                                                <div class="p-2 flex-grow-1 bd-highlight">
+                                                    <input type="checkbox" class="form-check-input" name="groups_whatsapp" value="{{ group.name }}" id="{{ group.id }}">
+                                                    <label class="form-check-label" for="{{ group.id }}">{{ group.name }}</label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="my-groups" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Meus grupos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <ul id="my-group-list" class="list-group border border-1 rounded" style="overflow-y: scroll; height: 600px;">
+                {% for group in my_groups %}
+                    <li class="list-group-item">
+                        <div class="d-flex bd-highlight form-check form-switch text-success align-text-center">
+                            <div class="p-2 flex-grow-1 bd-highlight">
+                                <label class="form-check-label"><strong>{{ group.name }}</strong> </label>
+                            </div>
+                            <a class="btn float-end" id="delete-group-btn" title="Deletar" data-url="{% url 'config:delete_group' pk=group.id %}">
+                                <i class="fas fa-trash text-danger"></i>
+                            </a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          <button type="button" class="btn btn-primary">Salvar</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+{% block js %}
+    <script type="text/javascript">
+
+        function selectAll() {
+            document.querySelectorAll('input[name="groups_whatsapp"]').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        }
+
+        function deselectAll() {
+            document.querySelectorAll('input[name="groups_whatsapp"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+
+        function orderSelected() {
+            const selectedGroups = [];
+            const selectedGroupsElements = [];
+            
+            // Coletar os grupos selecionados e seus elementos na lista
+            document.querySelectorAll('input[name="groups_whatsapp"]:checked').forEach(checkbox => {
+                selectedGroups.push(checkbox.value);
+                selectedGroupsElements.push(checkbox.parentElement.parentElement.parentElement); // Pegar o elemento pai do pai do input (li)
+            });
+
+            // Ordenar os elementos dos grupos selecionados e colocá-los no topo da lista
+            selectedGroupsElements.forEach(element => {
+                $('#groupList').prepend(element);
+            });
+
+            // Aqui você pode realizar a lógica para salvar os grupos selecionados, por exemplo, enviando-os para o backend via AJAX.
+            console.log(selectedGroups);
+            // Faça o que for necessário com os grupos selecionados
+        }
+        
+
+        // Função para filtrar grupos conforme o usuário digita na barra de pesquisa
+        document.getElementById("searchInput").addEventListener("keyup", function() {
+            var input, filter, ul, li, label, i, txtValue;
+            input = document.getElementById('searchInput');
+            filter = input.value.toUpperCase();
+            ul = document.querySelector('.list-group');
+            li = ul.getElementsByTagName('li');
+            for (i = 0; i < li.length; i++) {
+                label = li[i].getElementsByTagName("label")[0];
+                txtValue = label.textContent || label.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
+            }
+        });
+
+
+    $(document).ready(function() {
+        $(document).off('click', '#listarGruposBtn').on('click', '#listarGruposBtn', function(event) {
+            event.preventDefault();
+            $("#loading").show();
+
+            $.ajax({
+                url: "{% url 'config:grupos_whatsapp' %}?list_whatsapp=true",
+                method: 'GET',
+                success: function(data) {
+                    $("#loading").hide();
+
+                    if (data.status == false) {
+                        showToast(data.message, true);
+                        return;
+                    }
+
+                    // Manipular os dados dos grupos aqui
+                    var groups = data.groups_data;
+
+                    // Limpar a lista de grupos
+                    $('#groupList').empty();
+
+                    // Adicionar os grupos à lista
+                    groups.forEach(function(group) {
+                        var checkbox = '<input type="checkbox" class="form-check-input" name="groups_whatsapp" value="' + group.name + '" id="group_' + group.id + '">';
+                        var label = '<label class="form-check-label" for="group_' + group.id + '">' + group.name + '</label>';
+                        var listItem = '<li class="list-group-item">' +
+                                        '<div class="d-flex bd-highlight form-check form-switch text-success">' +
+                                            '<div class="p-2 flex-grow-1 bd-highlight">' +
+                                                checkbox + label +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</li>';
+                        $('#groupList').append(listItem);
+                    });
+
+                    // Mostrar a div com os grupos
+                    $('#groupListDiv').show();
+                    showToast(data.message, false);
+                },
+                error: function(error) {
+                    $("#loading").hide();
+                    console.error('Erro ao obter dados dos grupos:', error);
+                    showToast(error, true);
+                }
+            });
+        });
+    });
+
+
+    $(document).ready(function() {
+        $(document).off('click', '#saveSelectedGroupsBtn').on('click', '#saveSelectedGroupsBtn', function(event) {
+            event.preventDefault();
+            $("#loading").show();
+
+            const selectedGroups = [];
+            const idsSelectedGroups = [];
+            const selectedGroupsElements = [];
+            
+            // Coletar os grupos selecionados, seus IDs e seus elementos na lista
+            document.querySelectorAll('input[name="groups_whatsapp"]:checked').forEach(checkbox => {
+                selectedGroups.push(checkbox.value);
+                idsSelectedGroups.push(checkbox.id.split('_')[1]); // Extrair o ID do checkbox
+                selectedGroupsElements.push(checkbox.parentElement.parentElement.parentElement); // Pegar o elemento pai do pai do input (li)
+            });
+
+            var url = $(this).data('url');
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: {
+                    'selected_groups': selectedGroups,
+                    'selected_groups_ids': idsSelectedGroups // Enviar os IDs dos grupos selecionados
+                },
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                dataType: 'json',
+                success: function(response) {
+                    $("#loading").hide();
+                    showToast(response.message, false);
+                },
+                complete: function() {
+                    $('.send-ofert').prop("disabled", false); // Reativa o botão no final da requisição, seja ela bem-sucedida ou não
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr, status, error)
+                    $("#loading").hide();
+                    showToast(xhr.responseText, true);
+                }
+            });
+        });
+    });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $(document).off('click', '#delete-group-btn').on('click', '#delete-group-btn', function(event) {
+                event.preventDefault();
+                $("#loading").show();
+
+                var liElement = $(this).closest('li');
+                var groupId = $(this).closest('li').attr('id'); // ID do grupo a ser excluído
+
+                var url = $(this).data('url'); // URL da sua view de exclusão
+
+                // Envie uma solicitação Ajax para excluir o grupo
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: {
+                        'group_id': groupId,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        // Se a exclusão for bem-sucedida, remova o elemento do DOM
+                        liElement.remove();
+                        // Adicione aqui qualquer lógica de feedback adicional, se necessário
+                        $("#loading").hide();
+                        showToast(response.message, false);
+
+                    },
+                    error: function(xhr, status, error) {
+                        $("#loading").hide();
+                        console.error('Erro ao excluir grupo:', error);
+                        // Adicione aqui qualquer lógica de tratamento de erro adicional, se necessário
+                        howToast(response.message, true);
+                    }
+                });
+            });
+        });
+
+    $(document).ready(function() {
+        // Adiciona um evento quando o modal for exibido
+        $('#my-groups').on('shown.bs.modal', function (e) {
+            // Limpa a lista de grupos no modal
+            $('#my-group-list').empty();
+
+            // Faça uma requisição Ajax para carregar os grupos e preencher o modal
+            $.ajax({
+                url: "{% url 'config:get_my_groups_whatsapp' %}", // Substitua pela URL correta
+                type: 'GET',
+                success: function(data) {
+                    // Insira os grupos retornados na lista dentro do modal
+                    data.my_groups.forEach(function(group) {
+                        var url = "{% url 'config:delete_group' 9999 %}".replace("9999", group.pk)
+                        console.log(url)
+                        var listItem = '<li class="list-group-item">' +
+                                            '<div class="d-flex bd-highlight form-check form-switch text-success align-text-center">' +
+                                                '<div class="p-2 flex-grow-1 bd-highlight">' +
+                                                    '<label class="form-check-label"><strong>' + group.name + '</strong></label>' +
+                                                '</div>' +
+                                                '<button class="btn float-end delete-group-btn" id="delete-group-btn" title="Deletar" data-url="' + url + '">' +
+                                                    '<i class="fas fa-trash text-danger"></i>' +
+                                                '</button>' +
+                                            '</div>' +
+                                        '</li>';
+                        $('#my-group-list').append(listItem);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Erro ao carregar grupos:', error);
+                }
+            });
+        });
+    });
+</script>
+
+
+{% endblock js %}
+
+{% endblock body %}
