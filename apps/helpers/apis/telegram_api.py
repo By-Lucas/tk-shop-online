@@ -113,7 +113,7 @@ def send_media_with_description(media_path, chat_id, description, parse_mode="Ma
                 method="POST",
                 url=f"{TELEGRAM_API_URL}sendPhoto",
                 data=payload,
-                files={"photo": media_file}
+                #files={"photo": media_file}
             )
 
             result = response.json()

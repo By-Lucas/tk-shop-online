@@ -1,10 +1,9 @@
-import json
 from typing import Any
 
 from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
+from django.views.generic import View
 from django.shortcuts import redirect, render, get_object_or_404
-from django.views.generic import ListView, View, TemplateView, UpdateView, DeleteView, DetailView
 
 from category.models import Category
 from products.models.models_product import Product
@@ -14,8 +13,8 @@ from products.models.models_comment import CommentModel
 from config.models.models_telegram import TelegramGroups
 from config.models.models_whatsapp import WhtasappGroups
 from helpers.apis.whatsapp_api import send_to_whatsapp_group
-from helpers.utils import chunk_it, get_formatted_description
 from helpers.apis.telegram_api import send_media_with_description
+from helpers.utils import domain_company, get_formatted_description
 
 
 # Create your views here.
@@ -84,7 +83,7 @@ class SendProduct(View):
                     try:
                         if product.image:
                             send_whatsapp = send_to_whatsapp_group(caption=message,
-                                                                media_link=product.image.url,
+                                                                media_link=f'{domain_company()}{product.image.url}',
                                                                 list_chat_id=chat_ids_whatsapp,
                                                                 )
                             
