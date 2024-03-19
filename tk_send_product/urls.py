@@ -12,7 +12,7 @@ urlpatterns = [
     path('', include('core.urls'), name='home'),
     #path('conta/', include('accounts.urls'), name='accounts'),
     path('oferta/', include('products.urls'), name='product'),
-    #path('config/', include('config.urls'), name='config'),
+    path('config/', include('config.urls'), name='config'),
 ]
 
 # LOAD STATICS / MIDIAS

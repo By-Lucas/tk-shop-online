@@ -1,14 +1,16 @@
+import json
 from typing import Any
 
-from django.urls import reverse
+from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import ListView, View, TemplateView, UpdateView, DeleteView, DetailView
 
 from category.models import Category
-from products.forms import ProductForm
 from products.models.models_product import Product
+from products.forms import CommentForm, ProductForm
 from config.models.models_config import ConfigModel
+from products.models.models_comment import CommentModel
 from config.models.models_telegram import TelegramGroups
 from config.models.models_whatsapp import WhtasappGroups
 from helpers.apis.whatsapp_api import send_to_whatsapp_group
@@ -25,16 +27,17 @@ class ProductView(View):
         user = self.request.user
 
         product = get_object_or_404(Product, slug_product=slug)
+        comments = CommentModel.objects.filter(product=product).order_by("-created_date")[:5]
         form = ProductForm(instance=product)
         
         #featured_products = Product.objects.all()
-        
         featured_products = Product.objects.all().exclude(id=product.id)[:10]  # Obtém até 20 produtos
         #product_chunks = list(chunk_it(featured_products, 4)) # Aqui mostra de 4 em 4 produtos
 
         context = {
             'form': form,
             'product': product,
+            'comments': comments,
             'oferts_page':oferts_page,
             'category': Category.objects.all(),
             'product_chunks': featured_products,
@@ -114,3 +117,20 @@ class SendProduct(View):
                     
         return JsonResponse({'success': False, 'message': 'Requisição inválida'})
 
+
+def post_comment(request, slug):
+    product = get_object_or_404(Product, slug_product=slug)
+    
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.product = product
+            comment.save()
+            messages.success(request, 'Seu comentário foi enviado com sucesso!')
+            return redirect('product:product', slug=product.slug_product)
+        else:
+            messages.error(request, 'Houve um erro ao enviar seu comentário. Por favor, tente novamente.')
+    
+    return redirect('product:product', slug=slug)
+    

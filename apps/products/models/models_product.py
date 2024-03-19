@@ -12,11 +12,11 @@ from category.models import Category
 from stores.models import ProductStore
 from helpers.base_models import BaseModelTimestamp
 from config.models.models_config import ConfigModel
+from config.models.models_telegram import TelegramGroups
+from config.models.models_whatsapp import WhtasappGroups
 from helpers.apis.whatsapp_api import send_to_whatsapp_group
 from helpers.apis.telegram_api import send_media_with_description
 from helpers.utils import delete_products, get_formatted_description
-from config.models.models_telegram import TelegramGroups
-from config.models.models_whatsapp import WhtasappGroups
 
 
 def image_company(instance, filename):
@@ -55,7 +55,6 @@ class Product(BaseModelTimestamp):
                                                help_text="Alem das informações princioais, digite aqui outra informação que deseja enviar: Use o modelo descrito como base")
     
     slug_product = models.SlugField(unique=True, max_length=1000, null=True, blank=True)
-
 
     def __str__(self):
         return self.name if self.name else str(self.id)
