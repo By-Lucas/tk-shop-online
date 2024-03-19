@@ -65,12 +65,12 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+            <div class="mb-3">Total de grupos: <strong id="group-list-count">0</strong></div>
             <ul id="my-group-list" class="list-group border border-1 rounded" style="overflow-y: scroll; height: 600px;">
             </ul>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-          <button type="button" class="btn btn-primary">Salvar</button>
+          <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Fechar</button>
         </div>
       </div>
     </div>
@@ -273,11 +273,16 @@
             url: "{% url 'config:get_my_groups_whatsapp' %}", // Substitua pela URL correta
             type: 'GET',
             success: function(data) {
+                var count = 1;
+
                 // Insira os grupos retornados na lista dentro do modal
                 data.my_groups.forEach(function(group) {
                     var url = "{% url 'config:delete_group' 9999 %}".replace("9999", group.pk)
                     var listItem = '<li class="list-group-item">' +
                                         '<div class="d-flex bd-highlight form-check form-switch text-success align-text-center">' +
+                                            '<div class="p-2 bd-highlight">' +
+                                                '<strong>' + count + ' -</strong>' + // Adiciona o número sequencial
+                                            '</div>' +
                                             '<div class="p-2 flex-grow-1 bd-highlight">' +
                                                 '<label class="form-check-label"><strong>' + group.name + '</strong></label>' +
                                             '</div>' +
@@ -287,7 +292,13 @@
                                         '</div>' +
                                     '</li>';
                     $('#my-group-list').append(listItem);
+                    count++; // Incrementa o contador
                 });
+
+                // Atualizar o contador de itens na lista
+                var itemCount = data.my_groups.length;
+                $('#group-list-count').text(itemCount);
+
             },
             error: function(xhr, status, error) {
                 console.error('Erro ao carregar grupos:', error);
