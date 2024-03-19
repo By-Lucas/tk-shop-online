@@ -85,3 +85,5 @@ dist
 *.exe
 .vscode
 consume_api.py
+fruitables-1.0
+staticfiles
