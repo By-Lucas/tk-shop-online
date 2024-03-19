@@ -98,46 +98,47 @@ def send_media_with_description(media_path, chat_id, description, parse_mode="Ma
     TELEGRAM_API_URL = f"https://api.telegram.org/bot{auth_telegram.bot_token}/"
     
     browser = Browser()
-    media_type = mimetypes.guess_type(media_path)[0]
+    if media_path:
+        media_type = mimetypes.guess_type(media_path)[0]
 
-    if media_type and media_type.startswith("image"):
-        # É uma imagem
-        with open(media_path, 'rb') as media_file:
-            payload = {
-                'chat_id': chat_id,
-                'caption': description,
-                'parse_mode': parse_mode,
-                'disable_notification': not notify
-            }
-            response = browser.send_request(
-                method="POST",
-                url=f"{TELEGRAM_API_URL}sendPhoto",
-                data=payload,
-                #files={"photo": media_file}
-            )
+        if media_type and media_type.startswith("image"):
+            # É uma imagem
+            with open(media_path, 'rb') as media_file:
+                payload = {
+                    'chat_id': chat_id,
+                    'caption': description,
+                    'parse_mode': parse_mode,
+                    'disable_notification': not notify
+                }
+                response = browser.send_request(
+                    method="POST",
+                    url=f"{TELEGRAM_API_URL}sendPhoto",
+                    data=payload,
+                    files={"photo": media_file}
+                )
 
-            result = response.json()
-            if result.get("ok"):
-                return result
+                result = response.json()
+                if result.get("ok"):
+                    return result
 
-    elif media_type and media_type.startswith("video"):
-        # É um vídeo
-        with open(media_path, 'rb') as media_file:
-            payload = {
-                'chat_id': chat_id,
-                'caption': description,
-                'parse_mode': parse_mode,
-                'disable_notification': not notify
-            }
-            response = browser.send_request(
-                method="POST",
-                url=f"{TELEGRAM_API_URL}sendVideo",
-                data=payload,
-                files={"video": media_file}
-            )
+        elif media_type and media_type.startswith("video"):
+            # É um vídeo
+            with open(media_path, 'rb') as media_file:
+                payload = {
+                    'chat_id': chat_id,
+                    'caption': description,
+                    'parse_mode': parse_mode,
+                    'disable_notification': not notify
+                }
+                response = browser.send_request(
+                    method="POST",
+                    url=f"{TELEGRAM_API_URL}sendVideo",
+                    data=payload,
+                    files={"video": media_file}
+                )
 
-            result = response.json()
-            if result.get("ok"):
-                return result
+                result = response.json()
+                if result.get("ok"):
+                    return result
 
     return None

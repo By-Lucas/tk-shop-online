@@ -3,6 +3,7 @@ from typing import Any
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.generic import View
+from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import redirect, render, get_object_or_404
 
 from category.models import Category
@@ -16,7 +17,6 @@ from helpers.apis.whatsapp_api import send_to_whatsapp_group
 from helpers.apis.telegram_api import send_media_with_description
 from helpers.utils import domain_company, get_formatted_description
 
-from django.contrib.sites.shortcuts import get_current_site
 
 
 # Create your views here.
@@ -84,13 +84,14 @@ class SendProduct(View):
                 if config.send_product_group:
                     try:
                         if product.image:
+                            image_url = f'{get_current_site(request)}{product.image.url}'
                             send_whatsapp = send_to_whatsapp_group(caption=message,
-                                                                media_link=f'{get_current_site(request)}{product.image.url}',
+                                                                media_link=image_url,
                                                                 list_chat_id=chat_ids_whatsapp,
                                                                 )
                             
                             if 'error' in send_whatsapp:
-                                return JsonResponse({'success': False, 'message': f'Opção para envio de mensagens para {media_type.upper()}|[ERROR]: {send_whatsapp["error"]} .'})
+                                return JsonResponse({'success': False, 'message': f'Imagem: {image_url} | {media_type.upper()}|[ERROR]: {send_whatsapp["error"]} .'})
                             
                             if send_whatsapp:
                                 return JsonResponse({'success': True, 'message':"Produto enviado para os grupos Whatsapp"})
