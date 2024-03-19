@@ -90,10 +90,10 @@ class SendProduct(View):
                                                                 list_chat_id=chat_ids_whatsapp,
                                                                 )
                             
-                            if send_whatsapp and 'error' in send_whatsapp:
+                            if isinstance(send_whatsapp, dict) and 'error' in send_whatsapp:
                                 return JsonResponse({'success': False, 'message': f'Imagem: {image_url} | {media_type.upper()}|[ERROR]: {send_whatsapp["error"]} .'})
                             
-                            if send_whatsapp:
+                            if isinstance(send_whatsapp, bool) and send_whatsapp:
                                 return JsonResponse({'success': True, 'message':"Produto enviado para os grupos Whatsapp"})
                             
                     except Exception as e:

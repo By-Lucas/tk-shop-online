@@ -10,7 +10,7 @@ from helpers.utils import get_remote_file_size
 from config.models.models_whatsapp import AuthWhatsappModel
 
 
-def send_to_whatsapp_group(list_chat_id: list, media_link: str, caption: str):
+def send_to_whatsapp_group(list_chat_id: list, media_link: str, caption: str) -> bool | dict:
     auth_whatsapp = AuthWhatsappModel.objects.first()
     
     status = False
@@ -59,7 +59,7 @@ def send_to_whatsapp_group(list_chat_id: list, media_link: str, caption: str):
 
         else:
             logger.error(f'Ocorreu o seguinte erro ao enviar mensagem para o grupo do whatsapp: {response.text}')
-            response.json()
+            return response.json()
             
     return status
 
