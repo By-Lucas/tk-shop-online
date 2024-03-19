@@ -10,7 +10,7 @@ from helpers.utils import get_remote_file_size
 from config.models.models_whatsapp import AuthWhatsappModel
 
 
-def send_to_whatsapp_group(list_chat_id: list, media_link: str, caption: str) -> bool | dict:
+def send_to_whatsapp_group(list_chat_id: list, media_link: str, caption: str) -> bool:
     auth_whatsapp = AuthWhatsappModel.objects.first()
     
     status = False
