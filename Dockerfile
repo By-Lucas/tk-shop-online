@@ -22,10 +22,6 @@ RUN python -m pip install --upgrade pip
 # Install any needed packages specified in requirements.txt
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
-RUN python manage.py migrate
-
-RUN python manage.py collectstatic --noinput
-
 # Copy the rest of the application code into the container at /app
 COPY . .
 
