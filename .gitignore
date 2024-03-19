@@ -64,7 +64,7 @@ terraform.rc
 .vscode
 
 # Folders
-.env
+
 venv
 __pycache__
 tests
