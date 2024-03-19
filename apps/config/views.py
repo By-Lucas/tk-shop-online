@@ -21,7 +21,7 @@ def get_groups_whatsapp(request):
     my_groups = WhtasappGroups.objects.all()
     
     context = {
-        'my_groups': my_groups,
+        #'my_groups': my_groups,
         'groups_data': groups_data
         }
         
@@ -55,8 +55,6 @@ def get_groups_whatsapp(request):
 
 
 def get_my_groups_whatsapp(request):
-    settings = AuthWhatsappModel.objects.first()
-    
     groups_data = []
     for group in WhtasappGroups.objects.all():
         context = {
@@ -71,7 +69,6 @@ def get_my_groups_whatsapp(request):
 def save_selected_groups(request):
     selected_groups = request.POST.getlist("selected_groups[]", [])  # Lista de nomes dos grupos
     selected_groups_ids = request.POST.getlist("selected_groups_ids[]", [])  # Lista de IDs dos grupos
-    my_groups = [groups for groups in WhtasappGroups.objects.all()]
 
     if selected_groups and selected_groups_ids:
         for name, group_id in zip(selected_groups, selected_groups_ids):
@@ -89,7 +86,7 @@ def save_selected_groups(request):
                 logger.error(f"Erro ao processar o grupo {name}: {e}")
                 return JsonResponse({"message": f"Erro ao processar o grupo {name}: {e}"})
         
-    return JsonResponse({"my_groups": my_groups, "message": "Grupos salvos com sucesso."})
+    return JsonResponse({"message": "Grupos salvos com sucesso."})
 
 
 def delete_group(request, pk):

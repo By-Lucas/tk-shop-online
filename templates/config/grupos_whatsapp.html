@@ -66,18 +66,6 @@
         </div>
         <div class="modal-body">
             <ul id="my-group-list" class="list-group border border-1 rounded" style="overflow-y: scroll; height: 600px;">
-                {% for group in my_groups %}
-                    <li class="list-group-item">
-                        <div class="d-flex bd-highlight form-check form-switch text-success align-text-center">
-                            <div class="p-2 flex-grow-1 bd-highlight">
-                                <label class="form-check-label"><strong>{{ group.name }}</strong> </label>
-                            </div>
-                            <a class="btn float-end" id="delete-group-btn" title="Deletar" data-url="{% url 'config:delete_group' pk=group.id %}">
-                                <i class="fas fa-trash text-danger"></i>
-                            </a>
-                        </div>
-                    </li>
-                {% endfor %}
             </ul>
         </div>
         <div class="modal-footer">
@@ -87,6 +75,7 @@
       </div>
     </div>
 </div>
+
 
 {% block js %}
     <script type="text/javascript">
@@ -260,8 +249,8 @@
                         liElement.remove();
                         // Adicione aqui qualquer lógica de feedback adicional, se necessário
                         $("#loading").hide();
-                        showToast(response.message, false);
 
+                        showToast(response.message, false);
                     },
                     error: function(xhr, status, error) {
                         $("#loading").hide();
@@ -273,40 +262,40 @@
             });
         });
 
-    $(document).ready(function() {
-        // Adiciona um evento quando o modal for exibido
-        $('#my-groups').on('shown.bs.modal', function (e) {
-            // Limpa a lista de grupos no modal
-            $('#my-group-list').empty();
+        $(document).ready(function() {
+    // Remove any existing event handlers for showing the modal
+    $('#my-groups').off('shown.bs.modal').on('shown.bs.modal', function (e) {
+        // Limpa a lista de grupos no modal
+        $('#my-group-list').empty();
 
-            // Faça uma requisição Ajax para carregar os grupos e preencher o modal
-            $.ajax({
-                url: "{% url 'config:get_my_groups_whatsapp' %}", // Substitua pela URL correta
-                type: 'GET',
-                success: function(data) {
-                    // Insira os grupos retornados na lista dentro do modal
-                    data.my_groups.forEach(function(group) {
-                        var url = "{% url 'config:delete_group' 9999 %}".replace("9999", group.pk)
-                        console.log(url)
-                        var listItem = '<li class="list-group-item">' +
-                                            '<div class="d-flex bd-highlight form-check form-switch text-success align-text-center">' +
-                                                '<div class="p-2 flex-grow-1 bd-highlight">' +
-                                                    '<label class="form-check-label"><strong>' + group.name + '</strong></label>' +
-                                                '</div>' +
-                                                '<button class="btn float-end delete-group-btn" id="delete-group-btn" title="Deletar" data-url="' + url + '">' +
-                                                    '<i class="fas fa-trash text-danger"></i>' +
-                                                '</button>' +
+        // Faça uma requisição Ajax para carregar os grupos e preencher o modal
+        $.ajax({
+            url: "{% url 'config:get_my_groups_whatsapp' %}", // Substitua pela URL correta
+            type: 'GET',
+            success: function(data) {
+                // Insira os grupos retornados na lista dentro do modal
+                data.my_groups.forEach(function(group) {
+                    var url = "{% url 'config:delete_group' 9999 %}".replace("9999", group.pk)
+                    var listItem = '<li class="list-group-item">' +
+                                        '<div class="d-flex bd-highlight form-check form-switch text-success align-text-center">' +
+                                            '<div class="p-2 flex-grow-1 bd-highlight">' +
+                                                '<label class="form-check-label"><strong>' + group.name + '</strong></label>' +
                                             '</div>' +
-                                        '</li>';
-                        $('#my-group-list').append(listItem);
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Erro ao carregar grupos:', error);
-                }
-            });
+                                            '<button class="btn float-end delete-group-btn" id="delete-group-btn" title="Deletar" data-url="' + url + '">' +
+                                                '<i class="fas fa-trash text-danger"></i>' +
+                                            '</button>' +
+                                        '</div>' +
+                                    '</li>';
+                    $('#my-group-list').append(listItem);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Erro ao carregar grupos:', error);
+            }
         });
     });
+});
+
 </script>
 
 
