@@ -1,3 +1,4 @@
+import time
 from typing import Any
 
 from django.contrib import messages
@@ -84,6 +85,8 @@ class SendProduct(View):
                 if config.send_product_group:
                     try:
                         if product.image:
+                            time.sleep(1)
+                            
                             image_url = f'{domain_company()}{product.image.url}'
                             send_whatsapp = send_to_whatsapp_group(caption=message,
                                                                 media_link=image_url,

@@ -36,7 +36,6 @@ def send_to_whatsapp_group(list_chat_id: list, media_link: str, caption: str) ->
     headers = {'content-type': 'application/x-www-form-urlencoded'}
 
     for chat_id in list_chat_id:
-        time.sleep(1)
     
         payload = f"token={token__}&to={chat_id}&image={media_link}&caption={caption}"
         if media_link.endswith('.mp4') and get_remote_file_size(media_link):
@@ -46,7 +45,8 @@ def send_to_whatsapp_group(list_chat_id: list, media_link: str, caption: str) ->
             else:
                 payload = f"token={token__}&to={chat_id}&video={media_link}&caption={caption}"
         
-        payload = payload.encode('utf8')
+        #payload = payload.encode('utf8')
+        time.sleep(2)
         response = requests.request("POST", url, data=payload, headers=headers)
         if response.status_code == 200 and not 'error' in response.text:
             logger.success(f'Mensagem enviada para o grupo: {chat_id}')
