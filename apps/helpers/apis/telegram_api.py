@@ -90,7 +90,7 @@ def send_photo_with_description(photo_path, chat_id, description, parse_mode=Non
 
         return None
 
-def send_media_with_description(media_path, chat_id, description, parse_mode="Markdown", notify=True) -> dict:
+def send_media_with_description(chat_id, description, media_path=None,  parse_mode="Markdown", notify=True) -> dict:
     "Enviar Imagem/Video + descrição"
     global TELEGRAM_API_URL
     
@@ -140,5 +140,22 @@ def send_media_with_description(media_path, chat_id, description, parse_mode="Ma
                 result = response.json()
                 if result.get("ok"):
                     return result
+    else:
+        payload = {
+            'chat_id': chat_id,
+            'text': description,
+            'parse_mode': parse_mode,
+            'disable_notification': not notify
+        }
 
+        response = browser.send_request(
+            method="POST",
+            url=f"{TELEGRAM_API_URL}sendMessage",
+            data=payload,
+        )
+
+        result = response.json()
+        if result.get("ok"):
+            return result
+        
     return None

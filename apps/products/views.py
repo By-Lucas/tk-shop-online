@@ -84,13 +84,13 @@ class SendProduct(View):
                 if config.send_product_group:
                     try:
                         if product.image:
-                            image_url = f'{get_current_site(request)}{product.image.url}'
+                            image_url = f'{domain_company()}{product.image.url}'
                             send_whatsapp = send_to_whatsapp_group(caption=message,
                                                                 media_link=image_url,
                                                                 list_chat_id=chat_ids_whatsapp,
                                                                 )
                             
-                            if 'error' in send_whatsapp:
+                            if send_whatsapp and 'error' in send_whatsapp:
                                 return JsonResponse({'success': False, 'message': f'Imagem: {image_url} | {media_type.upper()}|[ERROR]: {send_whatsapp["error"]} .'})
                             
                             if send_whatsapp:
@@ -105,7 +105,8 @@ class SendProduct(View):
                 if config.send_product_group:
                     try:
                         if product.image:
-                            send_telegram = send_media_with_description(media_path=product.image.path, 
+                            image_path=product.image.path
+                            send_telegram = send_media_with_description(media_path=None, 
                                                                     chat_id=chat_ids_telegram, 
                                                                     description=message, 
                                                                     parse_mode="Markdown", 

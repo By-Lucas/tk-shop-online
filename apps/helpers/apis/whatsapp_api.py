@@ -10,10 +10,10 @@ from helpers.utils import get_remote_file_size
 from config.models.models_whatsapp import AuthWhatsappModel
 
 
-def send_to_whatsapp_group(list_chat_id: list, media_link: str, caption: str) -> bool:
+def send_to_whatsapp_group(list_chat_id: list, media_link: str, caption: str):
     auth_whatsapp = AuthWhatsappModel.objects.first()
     
-    status = None
+    status = False
     
     token__ = auth_whatsapp.token if auth_whatsapp else os.environ['TOKEN']
     insistance__ = auth_whatsapp.insitance_id if auth_whatsapp else os.environ['INSISTANCE_ID']
@@ -45,9 +45,8 @@ def send_to_whatsapp_group(list_chat_id: list, media_link: str, caption: str) ->
                 payload = f"token={token__}&to={chat_id}&image={media_link}&caption={caption}"
             else:
                 payload = f"token={token__}&to={chat_id}&video={media_link}&caption={caption}"
-            
-        payload = payload.encode('utf8').decode('iso-8859-1')
         
+        payload = payload.encode('utf8')
         response = requests.request("POST", url, data=payload, headers=headers)
         if response.status_code == 200 and not 'error' in response.text:
             logger.success(f'Mensagem enviada para o grupo: {chat_id}')
@@ -61,6 +60,7 @@ def send_to_whatsapp_group(list_chat_id: list, media_link: str, caption: str) ->
         else:
             logger.error(f'Ocorreu o seguinte erro ao enviar mensagem para o grupo do whatsapp: {response.text}')
             response.json()
+            
     return status
 
 
