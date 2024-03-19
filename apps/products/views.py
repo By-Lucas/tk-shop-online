@@ -84,9 +84,7 @@ class SendProduct(View):
             if media_type.lower() == "whatsapp":
                 if config.send_product_group:
                     try:
-                        if product.image:
-                            time.sleep(1)
-                            
+                        if product:
                             image_url = f'{domain_company()}{product.image.url}'
                             send_whatsapp = send_to_whatsapp_group(caption=message,
                                                                 media_link=image_url,
@@ -107,7 +105,7 @@ class SendProduct(View):
             if media_type.lower() == "telegram":
                 if config.send_product_group:
                     try:
-                        if product.image:
+                        if product:
                             image_path=product.image.path
                             send_telegram = send_media_with_description(media_path=None, 
                                                                     chat_id=chat_ids_telegram, 
