@@ -9,9 +9,6 @@ RUN apt-get update \
     && apt-get install -y libpq-dev gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Create a non-root user
-RUN useradd -m myuser
-USER myuser
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -25,6 +22,10 @@ RUN python -m pip install --upgrade pip
 # Install any needed packages specified in requirements.txt
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
+RUN python manage.py migrate
+
+RUN python manage.py collectstatic --noinput
+
 # Copy the rest of the application code into the container at /app
 COPY . .
 
@@ -33,7 +34,5 @@ COPY . .
 EXPOSE 8000
 
 # Command to run the application
-#CMD ["gunicorn", "--bind", "0.0.0.0:8000", "your_application.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "tk_send_product.wsgi:application"]
 
-# Command to run the application using the start script
-CMD ["./start.sh"]
