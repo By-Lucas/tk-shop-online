@@ -16,6 +16,8 @@ from helpers.apis.whatsapp_api import send_to_whatsapp_group
 from helpers.apis.telegram_api import send_media_with_description
 from helpers.utils import domain_company, get_formatted_description
 
+from django.contrib.sites.shortcuts import get_current_site
+
 
 # Create your views here.
 class ProductView(View):
@@ -83,7 +85,7 @@ class SendProduct(View):
                     try:
                         if product.image:
                             send_whatsapp = send_to_whatsapp_group(caption=message,
-                                                                media_link=f'{domain_company()}{product.image.url}',
+                                                                media_link=f'{get_current_site(request)}{product.image.url}',
                                                                 list_chat_id=chat_ids_whatsapp,
                                                                 )
                             
