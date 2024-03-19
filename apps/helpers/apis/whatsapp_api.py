@@ -46,7 +46,7 @@ def send_to_whatsapp_group(list_chat_id: list, media_link: str, caption: str) ->
             else:
                 payload = f"token={token__}&to={chat_id}&video={media_link}&caption={caption}"
             
-        payload = payload.encode('utf8')
+        payload = payload.encode('utf8').decode('iso-8859-1')
         
         response = requests.request("POST", url, data=payload, headers=headers)
         if response.status_code == 200 and not 'error' in response.text:

@@ -84,7 +84,7 @@ class SendProduct(View):
                     try:
                         if product.image:
                             send_whatsapp = send_to_whatsapp_group(caption=message,
-                                                                media_link=product.image.path,
+                                                                media_link=product.image.url,
                                                                 list_chat_id=chat_ids_whatsapp,
                                                                 )
                             
