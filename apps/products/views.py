@@ -90,7 +90,7 @@ class SendProduct(View):
                             image_url = f'{domain_company()}{product.image.url}'
                             send_whatsapp = send_to_whatsapp_group(caption=message,
                                                                 media_link=image_url,
-                                                                list_chat_id=chat_ids_whatsapp,
+                                                                list_chat_ids=chat_ids_whatsapp,
                                                                 )
                             
                             if isinstance(send_whatsapp, dict) and 'error' in send_whatsapp:

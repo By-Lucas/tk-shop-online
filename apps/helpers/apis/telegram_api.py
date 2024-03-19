@@ -90,6 +90,7 @@ def send_photo_with_description(photo_path, chat_id, description, parse_mode=Non
 
         return None
 
+
 def send_media_with_description(chat_id, description, media_path=None,  parse_mode="Markdown", notify=True) -> dict:
     "Enviar Imagem/Video + descrição"
     global TELEGRAM_API_URL
@@ -159,3 +160,4 @@ def send_media_with_description(chat_id, description, media_path=None,  parse_mo
             return result
         
     return None
+

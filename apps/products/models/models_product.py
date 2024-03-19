@@ -46,12 +46,12 @@ class Product(BaseModelTimestamp):
     resend_product = models.BooleanField(verbose_name="Reenviar produto para os grupos?", null=True, blank=True, default=False)
     company_product = models.ForeignKey(ProductStore, verbose_name="Shop online do produto", on_delete=models.DO_NOTHING, null=True, blank=True)
     product_description = models.TextField(verbose_name='Descrição para envio da mensagem', null=True, blank=True, 
-                                               default="""✅{titulo}✅
-                                               \n\n🔥 R${preco}
-                                               \n🔖 Use o cupom: {cupom}
-                                               \n🛍 Compre aqui: {link_produto}
-                                               \n\n😄 Convide seus amigos e familiares para participarem dos nossos grupos de promoção: {link_do_grupo}
-                                               \n⚠ O link da foto na promo, Não está Clicável ? É só adicionar um dos ADMS em seus contatos""",
+                                               default="""✅{titulo}✅\n
+                                               🔥 R${preco}
+                                               🔖 Use o cupom: {cupom}
+                                               🛍 Compre aqui: {link_produto}
+                                               \n😄 Convide seus amigos e familiares para participarem dos nossos grupos de promoção: {link_do_grupo}
+                                               \n⚠ O link da foto na promo, Não está Clicável? É só adicionar um dos ADMS em seus contatos""".encode("utf-8"),
                                                help_text="Alem das informações princioais, digite aqui outra informação que deseja enviar: Use o modelo descrito como base")
     
     slug_product = models.SlugField(unique=True, max_length=1000, null=True, blank=True)
@@ -87,7 +87,7 @@ class Product(BaseModelTimestamp):
         verbose_name_plural = "Produtos"
 
 
-@receiver(post_save, sender=Product)
+#@receiver(post_save, sender=Product)
 def post_save_create_product_receiver(sender, instance, created, **kwargs):
     config = ConfigModel.objects.all().first()
     chat_ids = TelegramGroups.objects.filter(send_msg=True).values_list('group_id', flat=True)
@@ -97,20 +97,20 @@ def post_save_create_product_receiver(sender, instance, created, **kwargs):
     
     if created:
         if config.send_product_group and instance.resend_product:
-            if instance.image:
+            if instance:
                 if not instance.product_description:
                     description = get_formatted_description(config.send_product_description, config.offer_group, instance)
                 else:
                     description = get_formatted_description(instance.product_description, config.offer_group, instance)
                     
-                send_telegram = send_media_with_description(media_path=instance.image.path, 
+                send_telegram = send_media_with_description(#media_path=instance.image.path, 
                                                             chat_id=chat_ids, 
                                                             description=description, 
                                                             parse_mode="Markdown", 
                                                             notify=True)
                     
-                send_whatsapp = send_to_whatsapp_group(list_chat_id=chat_ids_whatsapp,
-                                                        media_link=instance.image.path,
+                send_whatsapp = send_to_whatsapp_group(list_chat_ids=chat_ids_whatsapp,
+                                                        #media_link=instance.image.path,
                                                         caption=description)
                     
             else:
@@ -122,7 +122,7 @@ def post_save_create_product_receiver(sender, instance, created, **kwargs):
                 print('PRODUCO CRIADO E ENVIADO AO TELEGRAM')
             
         
-@receiver(pre_save, sender=Product)
+#@receiver(pre_save, sender=Product)
 def pre_save_product_receiver(sender, instance, **kwargs):
     config = ConfigModel.objects.all().first()
     chat_ids = TelegramGroups.objects.filter(send_msg=True).values_list('group_id', flat=True)
@@ -131,20 +131,20 @@ def pre_save_product_receiver(sender, instance, **kwargs):
     description = ""
     if instance.pk:
         if config.send_product_group and instance.resend_product:
-            if instance.image:
+            if instance:
                 if not instance.product_description:
                     description = get_formatted_description(config.send_product_description, config.offer_group, instance)
                 else:
                     description = get_formatted_description(instance.product_description, config.offer_group, instance)
                     
-                send_telegram = send_media_with_description(media_path=instance.image.path, 
+                send_telegram = send_media_with_description(#media_path=instance.image.path, 
                                                             chat_id=chat_ids, 
                                                             description=description, 
                                                             parse_mode="Markdown", 
                                                             notify=True)
                 
-                send_whatsapp = send_to_whatsapp_group(list_chat_id=chat_ids_whatsapp,
-                                                        media_link=instance.image.path,
+                send_whatsapp = send_to_whatsapp_group(list_chat_ids=chat_ids_whatsapp,
+                                                        #media_link=instance.image.path,
                                                         caption=description)
        
             else:

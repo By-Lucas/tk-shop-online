@@ -4,64 +4,71 @@ Documentação da api: https://docs.ultramsg.com/api/post/messages/image
 import os
 import time
 import requests
+import threading
 from loguru import logger
 
 from helpers.utils import get_remote_file_size
 from config.models.models_whatsapp import AuthWhatsappModel
 
 
-def send_to_whatsapp_group(list_chat_id: list, media_link: str, caption: str) -> bool:
-    auth_whatsapp = AuthWhatsappModel.objects.first()
-    
-    status = False
-    
-    token__ = auth_whatsapp.token if auth_whatsapp else os.environ['TOKEN']
-    insistance__ = auth_whatsapp.insitance_id if auth_whatsapp else os.environ['INSISTANCE_ID']
-    
-    # token__ = os.environ['TOKEN']
-    # insistance__ = os.environ['INSISTANCE_ID']
-
-    url = f"https://api.ultramsg.com/{insistance__}/messages/image"
-    
+def send_message_media_to_group(token, instance_id, chat_id, media_link, caption):
+    url = f"https://api.ultramsg.com/{instance_id}/messages/image"
     if media_link.endswith('.mp4'):
-        # Verificar o tamanho do arquivo de vídeo
         file_size = get_remote_file_size(media_link)
         if file_size > 16777216:  # 16MB (limite máximo para vídeos)
-            logger.warning('O vídeo contem mais de 16MB, enviando a imagem.')
-            url = f"https://api.ultramsg.com/{insistance__}/messages/image"
+            logger.warning('O vídeo contém mais de 16MB, enviando como imagem.')
         else:
-            url = F"https://api.ultramsg.com/{insistance__}/messages/video"
-            
+            url = f"https://api.ultramsg.com/{instance_id}/messages/video"
+
+    payload = f"token={token}&to={chat_id}&image={media_link}&caption={caption}"
+    if media_link.endswith('.mp4') and get_remote_file_size(media_link) <= 16777216:
+        payload = f"token={token}&to={chat_id}&video={media_link}&caption={caption}"
     
+    payload = payload.encode('utf8')
     headers = {'content-type': 'application/x-www-form-urlencoded'}
+    response = requests.post(url, data=payload, headers=headers)
+    if response.status_code == 200 and 'error' not in response.text:
+        logger.success(f'Mensagem enviada para o grupo: {chat_id}')
+    else:
+        logger.error(f'Ocorreu um erro ao enviar mensagem para o grupo {chat_id}: {response.text}')
 
-    for chat_id in list_chat_id:
-    
-        payload = f"token={token__}&to={chat_id}&image={media_link}&caption={caption}"
-        if media_link.endswith('.mp4') and get_remote_file_size(media_link):
-            file_size = get_remote_file_size(media_link)
-            if file_size > 16777216: 
-                payload = f"token={token__}&to={chat_id}&image={media_link}&caption={caption}"
-            else:
-                payload = f"token={token__}&to={chat_id}&video={media_link}&caption={caption}"
-        
-        #payload = payload.encode('utf8')
-        time.sleep(2)
-        response = requests.request("POST", url, data=payload, headers=headers)
-        if response.status_code == 200 and not 'error' in response.text:
-            logger.success(f'Mensagem enviada para o grupo: {chat_id}')
-            status = True
-            continue
-        
-        elif response.status_code == 200 and 'error' in response.text:
-            logger.error(f'Ocorreu o seguinte erro ao enviar mensagem para o grupo do whatsapp: {response.text}')
-            return response.json()
 
-        else:
-            logger.error(f'Ocorreu o seguinte erro ao enviar mensagem para o grupo do whatsapp: {response.text}')
-            return response.json()
-            
-    return status
+def send_message_to_group(token, instance_id, chat_id, caption):
+    url = f"https://api.ultramsg.com/{instance_id}/messages/chat"
+    payload = f"token={token}&to={chat_id}&body={caption}&priority=10"
+    payload = payload.encode('UTF-8')
+    headers = {'content-type': 'application/x-www-form-urlencoded'}
+    response = requests.request("POST", url, data=payload, headers=headers)
+    if response.status_code == 200 and 'error' not in response.text:
+        logger.success(f'Mensagem enviada para o grupo: {chat_id}')
+        return True
+    else:
+        logger.error(f'Ocorreu um erro ao enviar mensagem para o grupo {chat_id}: {response.text}')
+        return response.json()
+        
+def send_to_whatsapp_group_batch(list_chat_ids_batch, token, instance_id, caption, media_link=None):
+    threads = []
+    for chat_id in list_chat_ids_batch:
+        #thread = threading.Thread(target=send_message_media_to_group, args=(token, instance_id, chat_id, media_link, caption))
+        thread = threading.Thread(target=send_message_to_group, args=(token, instance_id, chat_id, caption))
+        threads.append(thread)
+        thread.start()
+
+    # Aguardar que todas as threads terminem
+    for thread in threads:
+        thread.join()
+
+def send_to_whatsapp_group(list_chat_ids: list, caption: str, media_link: str = None) -> bool:
+    batch_size = 30
+    auth_whatsapp = AuthWhatsappModel.objects.first()
+    token = auth_whatsapp.token if auth_whatsapp else os.environ['TOKEN']
+    instance_id = auth_whatsapp.insitance_id if auth_whatsapp else os.environ['INSISTANCE_ID']
+
+    for i in range(0, len(list_chat_ids), batch_size):
+        list_chat_ids_batch = list_chat_ids[i:i+batch_size]
+        send_to_whatsapp_group_batch(list_chat_ids_batch, token, instance_id, caption,  media_link)
+
+    return True
 
 
 def queue_message_whatsapp() -> list:
@@ -109,9 +116,3 @@ def queue_message_whatsapp() -> list:
 
     return list_messages
 
-
-
-# list_chat_id=["120363023864349230@g.us"] # Pode ser numero do telefone ou ID do grupo -> +5574981199190 | 120363023864349230@g.us
-# image = "icon_html.png"
-# caption="Imagem de teste para ser enviada"
-# send_to_whatsapp_group(list_chat_id, image, caption)
