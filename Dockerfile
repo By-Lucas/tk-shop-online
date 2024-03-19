@@ -25,10 +25,15 @@ RUN python -m pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code into the container at /app
 COPY . .
 
+# Copy the start script into the container at /app
+COPY start.sh .
+
+# Give execution permissions to the start script
+RUN chmod +x start.sh
+
 # Expose the port that Gunicorn will run on
 # Update the port to match the one you use with Gunicorn
 EXPOSE 8000
 
-# Command to run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "tk_send_product.wsgi:application"]
-
+# Command to run the application using the start script
+CMD ["./start.sh"]
