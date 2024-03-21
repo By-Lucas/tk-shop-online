@@ -32,11 +32,6 @@ class ProductListView(View):
         # Se desejar, você pode filtrar as categorias que têm produtos
         categories_with_products = categories_with_counts.filter(product_count__gt=0)
         
-        print(dir(products.first().favorites.values()))
-        print(products.first().favorites)
-        #favoriteproductlink_set
-        
-        
         if store:
             products = products.filter(company_product__name__icontains=store)
         if min_price:

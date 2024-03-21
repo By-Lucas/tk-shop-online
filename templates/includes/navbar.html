@@ -28,7 +28,7 @@
             <div class="collapse navbar-collapse bg-white rounded" id="navbarCollapse">
                 <div class="navbar-nav mx-auto">
                     <a href="{% url 'home:home' %}" class="nav-item nav-link active">Início</a>
-                    <a href="shop.html" class="nav-item nav-link">Blog</a>
+                    <a href="shop.html" class="nav-item nav-link" data-bs-toggle="modal" data-bs-target="#informations">Blog</a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Marcas</a>
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
@@ -40,7 +40,7 @@
                             {% endif %}
                         </div>
                     </div>
-                    <a href="contact.html" class="nav-item nav-link">Contatos</a>
+                    <a href="#" class="nav-item nav-link" data-bs-toggle="modal" data-bs-target="#contactModal">Contatos</a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Configurações</a>
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
@@ -68,3 +68,6 @@
     </div>
 </div>
 <!-- Navbar End -->
+
+{% include "includes/modal-contacts.html" %}
+{% include "includes/modal-info.html" %}

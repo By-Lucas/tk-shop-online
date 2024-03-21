@@ -1,0 +1,42 @@
+{% load config_tags %}
+
+{% contact_links_dict %}
+
+<!-- Modal -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="contactModalLabel">Contatos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Lista de contatos -->
+          <ul class="list-group">
+            <li class="list-group-item">
+              <a class="text-success" href="https://wa.me/+55{{whatsapp_support}}" target="_blank">
+                <i class="fab fa-whatsapp me-2"></i>
+                WhatsApp Suporte
+              </a>
+            </li>
+            <li class="list-group-item">
+                <a class="text-success" href="{{ whatsapp_group.0 }}" target="_blank">
+                  <i class="fab fa-whatsapp-square me-2"></i>
+                  Grupo de ofertas WhatsApp
+                </a>
+              </li>
+            <li class="list-group-item">
+              <a class="text-success" href="{{ telegram_channel.0 }}" target="_blank">
+                <i class="fab fa-telegram me-2"></i>
+                Meu de ofertas Telegram
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary text-white" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+</div>
+  

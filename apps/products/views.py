@@ -4,11 +4,12 @@ from typing import Any
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.generic import View
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import redirect, render, get_object_or_404
 
 from category.models import Category
-
 from products.forms import CommentForm, ProductForm
 from config.models.models_config import ConfigModel
 from products.models.models_comment import CommentModel
@@ -31,6 +32,8 @@ class ProductView(View):
         product = get_object_or_404(Product, slug_product=slug)
         comments = CommentModel.objects.filter(product=product).order_by("-created_date")[:5]
         form = ProductForm(instance=product)
+        # Incrementa o contador de visualizações
+        product.increment_views()
         
         #featured_products = Product.objects.all()
         featured_products = Product.objects.all().exclude(id=product.id)[:10]  # Obtém até 20 produtos
@@ -48,7 +51,8 @@ class ProductView(View):
     
     def get_object(self, queryset=None):
         return Product.objects.filter(pk=self.kwargs.get("pk"))
-
+    
+    @method_decorator(login_required, name='login_required')
     def post(self, request, slug, *args: Any, **kwargs: Any):
         x_frame_options = request.META.get("X-Frame-Options")
         if x_frame_options is not None:
@@ -64,6 +68,8 @@ class ProductView(View):
 
             
 class SendProduct(View):
+    
+    @method_decorator(login_required, name='login_required')
     def post(self, request,  *args: Any, **kwargs: Any):
         if request.method == "POST":
             send_telegram = None
@@ -138,7 +144,8 @@ def post_comment(request, slug):
     
     return redirect('product:product', slug=slug)
     
-
+    
+@login_required
 def mark_product_as_favorite(request, product_id):
     if request.method == 'POST':
         user = request.user
@@ -159,6 +166,7 @@ def mark_product_as_favorite(request, product_id):
         return JsonResponse({'message': 'Invalid request method'}, status=400)
 
 
+@login_required
 def like_product(request):
     if request.method == 'POST' and request.user.is_authenticated:
         product_id = request.POST.get('product_id')

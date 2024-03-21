@@ -53,8 +53,8 @@ class Product(BaseModelTimestamp):
                                                \n😄 Convide seus amigos e familiares para participarem dos nossos grupos de promoção: {link_do_grupo}
                                                \n⚠ O link da foto na promo, Não está Clicável? É só adicionar um dos ADMS em seus contatos""".encode("utf-8"),
                                                help_text="Alem das informações princioais, digite aqui outra informação que deseja enviar: Use o modelo descrito como base")
-    
     slug_product = models.SlugField(unique=True, max_length=1000, null=True, blank=True)
+    views_count = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name if self.name else str(self.id)
@@ -78,6 +78,13 @@ class Product(BaseModelTimestamp):
         
         delete_products(Product.objects.all(), config.time_hours_product)
         super().save(*args, **kwargs)
+        
+    def increment_views(self):
+        """
+        Incrementa o contador de visualizações do produto.
+        """
+        self.views_count += 1
+        self.save()
     
     def get_absolute_url(self):
         return reverse('product:product', kwargs={'slug': self.slug_product})  # ou slug=self.slug, se estiver usando slug

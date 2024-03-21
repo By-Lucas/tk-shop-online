@@ -5,7 +5,9 @@ from helpers.base_models import BaseModelTimestamp
 
 
 class ConfigModel(BaseModelTimestamp):
-    offer_group = models.URLField(max_length=2500, verbose_name='URL grupo de ofertas principal', null=True, blank=True)
+    whatsapp_group = models.URLField(max_length=2500, verbose_name='Grupo de ofertas principal Whatsapp', null=True, blank=True)
+    telegram_channel = models.URLField(max_length=2500, verbose_name='Grupo de ofertas principal Telegram', null=True, blank=True)
+    whatsapp_support = models.CharField(max_length=18, verbose_name='Contato Whatsapp para Suporte', null=True, blank=True)
     time_hours_product = models.IntegerField(verbose_name='Tempo para deletar cada produto', default=72)
     image = models.FileField(verbose_name="Logo", max_length=250, null=True, blank=True, upload_to=image_path)
     image_aba = models.FileField(verbose_name="Imagem da aba", max_length=250, null=True, blank=True, upload_to=image_path)
