@@ -44,34 +44,33 @@
                     {% if request.user.is_superuser %}
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Configurações</a>
-                            <div class="dropdown-menu m-0 bg-secondary rounded-0">
+                            <div class="dropdown-menu m-0 bg-success rounded-0">
                                 <a href="{% url 'config:grupos_whatsapp' %}" class="dropdown-item">Grupos Whatsapp</a>
                                 <a href="{% url 'home:home' %}" class="dropdown-item">Grupos Telegram</a>
                             </div>
                         </div>
-                        <a class="position-relative me-4 my-auto" href="{% url 'accounts:logout' %}" >Sair</a>
-
+                        <a class="nav-item nav-link" href="{% url 'accounts:logout' %}" >Sair</a>
                     {% endif %}
 
                 </div>
-                <div class="d-flex m-3 me-0 ">
+                <div class="d-flex m-3 me-0">
                     <button class="btn-search btn border border-secondary btn-md-square rounded-circle bg-white me-4"
                         data-bs-toggle="modal" data-bs-target="#searchModal">
                         <i class="fas fa-search text-primary"></i>
                     </button>
-                    <a href="#" class="position-relative me-4 my-auto">
+                    <a href="#" class="position-relative me-3 my-auto">
                         <i class="fa fa-shopping-bag fa-2x"></i>
                         <span class="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1"
                             style="top: -5px; left: 15px; height: 20px; min-width: 20px;">3</span>
                     </a>
                     {% if not request.user.is_authenticated %}
-                        <div class="nav-item dropdown">
-                            <a href="#" class="my-auto me-2 nav-link dropdown-toggle" id="dropdownAuth" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                        <div class="nav-item btn-group dropleft me-5">
+                            <a href="#" class="dropdown-toggle my-auto nav-link dropdown-toggle"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                                 <i class="fas fa-user fa-2x"></i>
                             </a>
-                            <div class="dropdown-menu m-0 bg-secondary rounded-0" aria-labelledby="dropdownAuth">
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalLoginForm">Login</a>
-                                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalRegisterForm">Cadastre-se</a>
+                            <div class="dropdown-menu dropdown-menu-right bg-success" >
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalLoginForm">Login</a>
+                                <a class="dropdown-item col-sm-12" href="#" data-bs-toggle="modal" data-bs-target="#modalRegisterForm">Cadastre-se</a>
                             </div>
                         </div>
                     {% endif %}
