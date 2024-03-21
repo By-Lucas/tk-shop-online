@@ -1,111 +1,76 @@
 from typing import Any
 
-from django.contrib import messages, auth
 from django.urls import reverse_lazy
+from django.contrib import messages, auth
 from django.http import HttpResponse, JsonResponse
 from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.tokens import default_token_generator
 from django.views.generic import UpdateView, TemplateView
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import redirect, render, get_object_or_404
-from django.contrib.auth import logout, update_session_auth_hash, authenticate
+from django.contrib.auth import logout, update_session_auth_hash, authenticate, login
 
 from accounts.models import User
 from company.models.models_company import Company
-from helpers.decorators import admin_level_required
+#from helpers.decorators import admin_level_required
 from accounts.forms import UserForm, UserUpdateForm
-from company.form import CollaboratorForm, CompanyForm
-from helpers.commons import LEGAL_PERSON, NATURAL_PERSON
-from company.models.models_collaborator import Collaborator
+#from company.form import CollaboratorForm, CompanyForm
+#from helpers.commons import LEGAL_PERSON, NATURAL_PERSON
+#from company.models.models_collaborator import Collaborator
 from helpers.utils import get_unique_username, send_notification, send_verification_email
 
 
-def login(request):
+def login_view(request):
     if request.user.is_authenticated:
         messages.error(request, 'Você já está logado!')
-        return redirect('home')
-    
-    user_form = UserForm(request.POST or None, request.FILES or None)
-    context = {'user_form': user_form}
+        return redirect('home:home')
 
     if request.method == 'POST':
-        email = request.POST['email']
-        password = request.POST['password']
+        email = request.POST.get('email')
+        password = request.POST.get('password')
 
-        user = authenticate(username=email, password=password)
-   
+        user = authenticate(request, username=email, password=password)
+
         if user is not None:
-            messages.success(request, f'Seja bem vindo {email}')
-            auth.login(request, user)
-            return redirect('home')
-
-        elif user_form.is_valid():
-            person_type = user_form.cleaned_data['cnpj_cpf']
-            user = user_form.save(commit=False)
-            user.username = get_unique_username(user.email)
-            user.set_password(user.password)
-            if len(person_type) > 14:
-                user.person_type = LEGAL_PERSON
-            else:
-                user.person_type = NATURAL_PERSON
-            user.save()
-            messages.success(request, f'Seja bem vindo {email}')
-            return redirect('home')
-        
+            login(request, user)
+            messages.success(request, f'Bem-vindo, {email}!')
+            return redirect('home:home')
         else:
-            messages.error(request, 'Credenciáis de login iválida.')
-            return redirect('accounts:login')
-    return render(request, 'accounts/sign-in.html', context)
+            messages.error(request, 'Credenciais de login inválidas.')
+            return redirect('home:home')
 
 
 def logout_user(request):
     auth.logout(request)
-    messages.error(request, 'Você está desconectado.')
-    return redirect('accounts:login')
+    messages.info(request, 'Logout feito.')
+    return redirect('home:home')
 
 
-@login_required
-#@register_user_level_required
 def add_user(request):
-    user = request.user
-    context = {}
-    
     if request.method == 'POST':
         user_form = UserForm(request.POST, request.FILES)
     
         if user_form.is_valid():
-            person_type = user_form.cleaned_data['cnpj_cpf']
-
             user = user_form.save(commit=False)
+            password =request.POST.get('password1')
+            user.password1 = password
+            user.password2 = password
             user.username = get_unique_username(user.email)
-            user.set_password(user.password)
-
-            if len(person_type) > 14:
-                user.person_type = LEGAL_PERSON
-            else:
-                user.person_type = NATURAL_PERSON
-
+            user.set_password(password)
             user.save()
-
-             # Send verification email
-            mail_subject = 'Por favor, ative sua conta'
-            email_template = 'accounts/includes/account_verification_email.html'
-            send_verification_email(request, user, mail_subject, email_template)
-            messages.success(request, 'Foi enviando um email de ativação para a sua conta de email!')
             
-            return redirect('home')
+            messages.success(request, 'Usuário criado com sucesso!')
+            return redirect('home:home')
         else:
-            messages.error(request, f'Corrija os erros abaixo: {user_form.errors}')
-    else:
-        user_form = UserForm()
+            messages.error(request, f'Por favor, corrija os erros abaixo. {user_form.errors}')
 
-    context['user_form'] = user_form
-    context['is_active_add_accounts'] = True
-    context['is_active_clinic'] = True
-    context['title_page'] = 'Adicionar Usuário'
-    return render(request, 'accounts/login.html', context)
+    else:
+        user_form = UserCreationForm()
+        
+    return redirect('home:home')
 
 
 class UpdateCollaborador(LoginRequiredMixin, UpdateView):

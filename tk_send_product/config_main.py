@@ -1,3 +1,5 @@
+from django.contrib.messages import constants
+
 
 LOGIN_URL = "accounts:login"
 X_FRAME_OPTIONS = 'SAMEORIGIN'
@@ -53,3 +55,12 @@ JET_THEMES = [
 
 JET_DEFAULT_THEME = 'default'  # Nome do tema padrão
 
+
+# TAGS MESSAGE TEMPLATE
+MESSAGE_TAGS = {
+    constants.DEBUG: 'primary',
+    constants.ERROR: 'danger',
+    constants.SUCCESS: 'success',
+    constants.INFO: 'info',
+    constants.WARNING: 'warning',
+}

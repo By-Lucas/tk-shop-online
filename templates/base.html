@@ -44,9 +44,10 @@
 
 <body>
     {% include "includes/toast.html" %}
+    {% include "includes/alert-message.html" %}
     
     <!-- Spinner Start -->
-    <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
+    <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-grow text-success" role="status"></div>
     </div>
     <!-- Spinner End -->
@@ -62,7 +63,6 @@
 
     {% include "products/includes/modal-add-product.html" %}
     {% include "includes/modal-search-start.html" %}
-    {% include "includes/alert-message.html" %}
     {% include "includes/div-loading.html" %}
 
     {% include "includes/footer.html" %}

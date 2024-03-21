@@ -1,0 +1,56 @@
+<div class="modal fade" id="modalRegisterForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content"  style="background-color: #f9f9f9;">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Cadastre-se</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+        </button>
+      </div>
+      <form action="{% url 'accounts:add_user' %}" method="post">
+        {% csrf_token %}
+        <div class="modal-body mx-3">
+            <div class="md-form mb-3">
+                <i class="fas fa-user prefix grey-text"></i>
+                <label data-error="wrong" data-success="right" for="orangeForm-name">Nome completo</label>
+                <input type="text" id="orangeForm-name" name="name" class="form-control validate">
+            </div>
+            <div class="md-form mb-3">
+                <i class="fas fa-envelope prefix grey-text"></i>
+                <label data-error="wrong" data-success="right" for="orangeForm-email">Seu email</label>
+                <input type="email" id="orangeForm-email" name="email" class="form-control validate">
+            </div>
+    
+            <div class="md-form mb-3">
+                <i class="fas fa-lock prefix grey-text"></i>
+                <label data-error="wrong" data-success="right" for="orangeForm-pass">Sua senha</label>
+                <input type="password" id="orangeForm-pass" name="password1" class="form-control validate">
+            </div>
+            
+            <div class="md-form mb-3">
+                <i class="fas fa-lock prefix grey-text"></i>
+                <label data-error="wrong" data-success="right" for="orangeForm-pass-confirm">Confirme sua senha</label>
+                <input type="password" id="orangeForm-pass-confirm" name="password2" class="form-control validate">
+            </div>
+            
+            <!-- Renderizar os erros de validação -->
+            {% if user_form.errors %}
+                <div class="alert alert-danger">
+                    <ul>
+                    {% for field, errors in user_form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+        <div class="modal-footer d-flex justify-content-center">
+            <button class="btn btn-success" type="submit">Cadastre-se</button>
+        </div>
+    </form>
+    
+    </div>
+  </div>
+</div>

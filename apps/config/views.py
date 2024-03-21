@@ -1,10 +1,9 @@
-import json
-import time
+
 import requests
 from loguru import logger
 
-from django.utils import timezone
-from django.shortcuts import get_object_or_404, render
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
 from django.http import JsonResponse
 
 from company.models.models_company import Company
@@ -12,6 +11,10 @@ from config.models.models_whatsapp import AuthWhatsappModel, WhtasappGroups
 
 
 def get_groups_whatsapp(request):
+    if not request.user.is_superuser:
+        messages.warning(request, 'Voce não em permissão para acessar esta pagina.')
+        return redirect('home:home')
+    
     settings = AuthWhatsappModel.objects.first()
     token__ = settings.token
     insistance__ = settings.insitance_id
