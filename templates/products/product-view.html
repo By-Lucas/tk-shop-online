@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load product_tags %}
 {% load static %}
 
 {% block body %}
@@ -65,17 +65,25 @@
                                     <button class="btn btn-success border-0 float-right mb-2" id="btnVisualizacoesOferta">
                                         <i class="fa fa-eye"></i> 427
                                     </button>
-                                    <button class="btn btn-success border-0 float-right mb-2" id="btnLikeOferta" data-oferta-id="100016">
-                                        <i class="fa fa-thumbs-up"></i><span> 0</span>
-                                    </button>
-                                    <input type="hidden" id="btnLikeOfertaLink" value="https://promoburn.com.br/ofertas/curtir">
+                                    {% if request.user.is_authenticated and product|is_liked:request.user %}
+                                        <button class="btn btn-success border-0 float-right mb-2 like-btn" id="btnLikeOferta" data-product-id="{{ product.id }}">
+                                            <i class="fa fa-thumbs-up"></i><span> {{ product.likes.count }}</span>
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-success border-0 float-right mb-2 like-btn" {% if request.user.is_authenticated %} id="btnLikeOferta" {% endif %} data-product-id="{{ product.id }}">
+                                            <i class="fa fa-thumbs-up"></i><span> {{ product.likes.count }}</span>
+                                        </button>
+                                    {% endif %}
+
                                     <button class="btn btn-warning border-0 float-right mb-2" id="btnAddReportar" data-toggle="modal" data-target="#modalReportTip100016">
                                         <i class="fa fa-exclamation-circle"></i> Reportar
                                     </button>
                                     <button class="btn btn-primary border-0 float-right mb-2" id="btnAddProdutoListaDesejos">
                                         <i class="fa fa-bell"></i> Ativar Alerta
                                     </button>
-                                    <a href="#comentarios" class="btn btn-secondary border-0 float-right mb-2" id="btnScrollToComments"><i class="fa fa-comments"></i> 0</a>
+                                    <a href="#comentarios" class="btn btn-secondary border-0 float-right mb-2" id="btnScrollToComments">
+                                        <i class="fa fa-comments"></i> {% if comments.count > 0 %} {{comments.count}}{% else %}0{% endif %}
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -214,7 +222,6 @@
 
 <!-- product_list.html -->
 <script>
-    var myModal = new bootstrap.Modal(document.getElementById('editProductModal'));
 
     $(document).ready(function() {
         $('form#comment-form').on('submit', function(event) {
@@ -239,6 +246,36 @@
         });
     });
     
+
+    $(document).ready(function() {
+        $(document).off('click', '#btnLikeOferta').on('click', '#btnLikeOferta', function (event) {
+            event.preventDefault();
+
+            var productId = $(this).data('product-id');
+            var likeBtn = $(this);
+
+            console.log(productId)
+
+            $.ajax({
+                url: "{% url 'product:like_product' %}",
+                type: 'POST',
+                data: {
+                    'product_id': productId,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(data) {
+                    // Atualiza o contador de likes
+                    likeBtn.find('span').text(' '+data.likes_count);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Erro ao enviar like:', error);
+                }
+            });
+        });
+    });
+
+    var myModal = new bootstrap.Modal(document.getElementById('editProductModal'));
+
 </script>
 
 

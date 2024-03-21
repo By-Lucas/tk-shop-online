@@ -4,19 +4,19 @@ import random
 
 from django.db import models
 from django.urls import reverse
-from django.dispatch import receiver
 from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
 from django.db.models.signals import post_save, pre_save
 
 from category.models import Category
 from stores.models import ProductStore
-from helpers.base_models import BaseModelTimestamp
 from config.models.models_config import ConfigModel
 from config.models.models_telegram import TelegramGroups
 from config.models.models_whatsapp import WhtasappGroups
 from helpers.apis.whatsapp_api import send_to_whatsapp_group
 from helpers.apis.telegram_api import send_media_with_description
 from helpers.utils import delete_products, get_formatted_description
+from helpers.base_models import BaseModelTimestamp, BaseModelTimestampUser
 
 
 def image_company(instance, filename):
@@ -155,3 +155,25 @@ def pre_save_product_receiver(sender, instance, **kwargs):
                 instance.save()
                 print('PRODUTO EDITADO REENVIADO PARA OS GRUPOS')
 
+
+class FavoriteProductLink(BaseModelTimestampUser):
+    product = models.ForeignKey(Product, verbose_name="Produto", on_delete=models.CASCADE, related_name='favorites')
+    is_favorite = models.BooleanField(verbose_name="Favorito?", null=True, blank=True, default=False)
+    
+    def __str__(self):
+        return self.user.email
+    
+    class Meta:
+        verbose_name = "Produto favorito"
+        verbose_name_plural = "Produtos favoritos"
+        
+
+class ProductLike(BaseModelTimestampUser):
+    product = models.ForeignKey(Product, verbose_name=_("Product"), on_delete=models.CASCADE, related_name='likes')
+
+    def __str__(self):
+        return f"{self.user.email} likes {self.product.name}"
+
+    class Meta:
+        verbose_name = _("Produto Like")
+        verbose_name_plural = _("Produtos Likes")

@@ -8,7 +8,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import redirect, render, get_object_or_404
 
 from category.models import Category
-from products.models.models_product import Product
+
 from products.forms import CommentForm, ProductForm
 from config.models.models_config import ConfigModel
 from products.models.models_comment import CommentModel
@@ -17,7 +17,7 @@ from config.models.models_whatsapp import WhtasappGroups
 from helpers.apis.whatsapp_api import send_to_whatsapp_group
 from helpers.apis.telegram_api import send_media_with_description
 from helpers.utils import domain_company, get_formatted_description
-
+from products.models.models_product import FavoriteProductLink, Product, ProductLike
 
 
 # Create your views here.
@@ -138,3 +138,43 @@ def post_comment(request, slug):
     
     return redirect('product:product', slug=slug)
     
+
+def mark_product_as_favorite(request, product_id):
+    if request.method == 'POST':
+        user = request.user
+        product = Product.objects.get(id=product_id)
+        
+        # Verifique se já existe um registro para este produto para o usuário
+        favorite_link, created = FavoriteProductLink.objects.update_or_create(user=user, product=product)
+        
+        # Marque o produto como favorito
+        if not favorite_link.is_favorite:
+            favorite_link.is_favorite = True
+            favorite_link.save()
+            return JsonResponse({'result': True, 'message': 'Produto marcado como favorito'})
+        else:
+            favorite_link.delete()
+            return JsonResponse({'result': False, 'message': 'Produto removivo de favoritos'})
+    else:
+        return JsonResponse({'message': 'Invalid request method'}, status=400)
+
+
+def like_product(request):
+    if request.method == 'POST' and request.user.is_authenticated:
+        product_id = request.POST.get('product_id')
+        product = Product.objects.get(pk=product_id)
+        
+        # Verifica se o usuário já deu like no produto
+        if ProductLike.objects.filter(product=product, user=request.user).exists():
+            # Se já deu like, remove o like
+            ProductLike.objects.filter(product=product, user=request.user).delete()
+        else:
+            # Se não deu like, adiciona o like
+            ProductLike.objects.create(product=product, user=request.user)
+
+        # Retorna o novo número de likes
+        likes_count = product.likes.count()
+        return JsonResponse({'likes_count': likes_count})
+
+    return JsonResponse({'error': 'Requisição inválida ou usuário não autenticado'}, status=400)
+

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load product_tags %}
 
 {% block body %}
 
@@ -134,7 +135,7 @@
                                     <div class="rounded position-relative fruite-item">
                                         <div class="p-3">
                                             <div class="position-relative">
-                                                <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <button class="btn dropdown-toggle"  type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                                     <i class="fa fa-share-alt me-0 text-success"></i>
                                                 </button>
                                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -163,11 +164,21 @@
                                                 </ul>
                                             </div>
                                             
-                                            <div class="text-white bg-transparent rounded position-absolute" style="top: 10px; right: 10px;">
-                                                <a href="#" class="btn">
-                                                    <i class="fa fa-heart me-0 text-danger"></i>
-                                                </a>
-                                            </div>
+                                            {% if request.user.is_authenticated and product|is_favorite:request.user %}
+                                                <div class="text-white bg-transparent rounded position-absolute" style="top: 10px; right: 10px;">
+                                                    <a href="#favorite" data-url="{% url 'product:mark_product_as_favorite' product.id %}" {% if request.user.is_authenticated  %} id="markAsFavoriteBtn" {% endif %}  class="btn">
+                                                        <i class="fa fa-heart me-0 text-danger"></i> <!-- Altere a cor do ícone para vermelho -->
+                                                    </a>
+                                                </div>
+                                            <!-- Se o produto não estiver marcado como favorito -->
+                                            {% else %}
+                                                <div class="text-white bg-transparent rounded position-absolute" style="top: 10px; right: 10px;">
+                                                    <a href="#favorite" data-url="{% url 'product:mark_product_as_favorite' product.id %}" {% if request.user.is_authenticated  %} id="markAsFavoriteBtn" {% endif %}   class="btn">
+                                                        <i class="fa fa-heart me-0" style="color: #979494;"></i>
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+
                                         </div>
 
                                         <div class="fruite-img p-3">
@@ -281,6 +292,39 @@
             });
         });
     });
+
+    $(document).ready(function() {
+        $(document).off('click', '#markAsFavoriteBtn').on('click', '#markAsFavoriteBtn', function (event) {
+            event.preventDefault();
+            var url = $(this).data('url');
+            var icon = $(this).find('i'); // Captura o ícone dentro do link
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                success: function(response) {
+                    // Verifica se o resultado é true
+                    if (response.result === true) {
+                        // Adiciona a classe 'text-danger' ao ícone
+                        icon.addClass('text-danger');
+                        showToast(response.message, false);
+                    } else {
+                        // Remove a classe 'text-danger' do ícone
+                        icon.removeClass('text-danger');
+                        // Adiciona a classe 'text-primary' ao ícone
+                        icon.css('color', '#979494');
+                        showToast(response.message, false);
+                    }
+                },
+                error: function(error) {
+                    showToast(error, true);
+                }
+            });
+        });
+    });
+
+
 </script>
 
 {% endblock js %}

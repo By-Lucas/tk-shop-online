@@ -1,10 +1,10 @@
 from django.db import models
-
+from .models_product import Product
 from helpers.base_models import BaseModelTimestamp
 
 
 class CommentModel(BaseModelTimestamp):
-    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='comments')
+    product = models.ForeignKey(Product, verbose_name="Produto", on_delete=models.CASCADE, related_name='comments')
     email = models.EmailField(verbose_name="Email")
     name = models.CharField(verbose_name="Nome", max_length=150)
     description = models.TextField(verbose_name="Comentário")
